@@ -1,2 +1,2 @@
-# taiwanese-cusine
+# taiwanese-cuisine
 Eating is life
