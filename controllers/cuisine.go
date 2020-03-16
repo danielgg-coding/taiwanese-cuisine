@@ -25,17 +25,24 @@ func GetCuisine(db *sql.DB) gin.HandlerFunc {
 	}
 
 	return gin.HandlerFunc(fn)
+
 }
 
 func GetAllCuisine(db *sql.DB) gin.HandlerFunc {
+
 	fn := func(c *gin.Context) {
+
 		cuisines, err := queries.GetCuisine(db, "all")
+
 		if err != nil {
 			panic(err.Error()) // proper error handling instead of panic in your app
 		}
+
 		c.JSON(200, cuisines)
 	}
+
 	return gin.HandlerFunc(fn)
+
 }
 
 func VoteCuisine(db *sql.DB) gin.HandlerFunc {
