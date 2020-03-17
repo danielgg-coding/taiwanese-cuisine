@@ -2,7 +2,8 @@ package queries
 
 import (
 	"database/sql"
-	"taiwanese-cuisine/models"
+
+	"github.com/danielgg-coding/taiwanese-cuisine/models"
 )
 
 func GetCuisine(db *sql.DB, id int) (*models.Cuisine, error) {

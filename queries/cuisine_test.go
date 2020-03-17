@@ -3,9 +3,8 @@ package queries
 import (
 	"testing"
 
-	"taiwanese-cuisine/models"
-
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/danielgg-coding/taiwanese-cuisine/models"
 	"github.com/stretchr/testify/assert"
 )
 

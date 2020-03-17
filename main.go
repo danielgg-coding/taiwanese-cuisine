@@ -3,8 +3,7 @@ package main
 import (
 	"database/sql"
 
-	"taiwanese-cuisine/controllers"
-
+	"github.com/danielgg-coding/taiwanese-cuisine/controllers"
 	"github.com/gin-gonic/gin"
 )
 
