@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 	"taiwanese-cuisine/queries"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +14,12 @@ func GetCuisine(db *sql.DB) gin.HandlerFunc {
 
 	fn := func(c *gin.Context) {
 
-		cuisineId := c.Param("cuisineId")
+		cuisineIdString := c.Param("cuisineId")
+		cuisineId, err := strconv.Atoi(cuisineIdString)
+
+		if err != nil {
+			panic(err.Error()) // proper error handling instead of panic in your app
+		}
 
 		cuisines, err := queries.GetCuisine(db, cuisineId)
 
@@ -32,7 +38,7 @@ func GetAllCuisine(db *sql.DB) gin.HandlerFunc {
 
 	fn := func(c *gin.Context) {
 
-		cuisines, err := queries.GetCuisine(db, "all")
+		cuisines, err := queries.GetAllCuisine(db)
 
 		if err != nil {
 			panic(err.Error()) // proper error handling instead of panic in your app
