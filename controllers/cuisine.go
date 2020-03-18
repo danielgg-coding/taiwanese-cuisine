@@ -10,18 +10,19 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// GetCuisine get cuisine by id
 func GetCuisine(db *sql.DB) gin.HandlerFunc {
 
 	fn := func(c *gin.Context) {
 
-		cuisineIdString := c.Param("cuisineId")
-		cuisineId, err := strconv.Atoi(cuisineIdString)
+		cuisineIDString := c.Param("cuisineId")
+		cuisineID, err := strconv.Atoi(cuisineIDString)
 
 		if err != nil {
 			panic(err.Error()) // proper error handling instead of panic in your app
 		}
 
-		cuisines, err := queries.GetCuisine(db, cuisineId)
+		cuisines, err := queries.GetCuisine(db, cuisineID)
 
 		if err != nil {
 			panic(err.Error()) // proper error handling instead of panic in your app
@@ -34,6 +35,7 @@ func GetCuisine(db *sql.DB) gin.HandlerFunc {
 
 }
 
+// GetAllCuisine get all cuisine
 func GetAllCuisine(db *sql.DB) gin.HandlerFunc {
 
 	fn := func(c *gin.Context) {
@@ -51,6 +53,7 @@ func GetAllCuisine(db *sql.DB) gin.HandlerFunc {
 
 }
 
+// VoteCuisine write comparison entry
 func VoteCuisine(db *sql.DB) gin.HandlerFunc {
 
 	fn := func(c *gin.Context) {
