@@ -5,3 +5,8 @@ type Cuisine struct {
 	Name  string
 	Score int64
 }
+
+type FirestoreCuisine struct {
+	Score  int64 `firestore:"score"`
+	Played int64 `firestore:"played"`
+}

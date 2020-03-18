@@ -1,8 +1,12 @@
 package queries
 
 import (
+	"context"
 	"database/sql"
+	"log"
+	"strconv"
 
+	"cloud.google.com/go/firestore"
 	"github.com/danielgg-coding/taiwanese-cuisine/models"
 )
 
@@ -50,4 +54,34 @@ func GetAllCuisine(db *sql.DB) ([]models.Cuisine, error) {
 	}
 
 	return cuisines, nil
+}
+
+// GetCuisineScore get current score of a cuisine
+func GetCuisineScore(client *firestore.Client, id int) (int64, error) {
+	dsnap, err := client.Collection("scores").Doc(strconv.Itoa(id)).Get(context.Background())
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	// Extract the docuemt's data into a vault of type FirestoreCuisine
+	var nyData models.FirestoreCuisine
+	if err := dsnap.DataTo(&nyData); err != nil {
+		return 0, err
+	}
+
+	return nyData.Score, nil
+}
+
+// UpdateCuisineScore update an entry to firestore
+func UpdateCuisineScore(client *firestore.Client, id int, score int64, played int64) error {
+	nyData := models.FirestoreCuisine{
+		Played: played,
+		Score:  score,
+	}
+	result, err := client.Collection("scores").Doc(strconv.Itoa(id)).Set(context.Background(), nyData)
+	if err != nil {
+		return err
+	}
+	log.Print(result)
+	return nil
 }
