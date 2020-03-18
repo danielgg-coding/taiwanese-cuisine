@@ -5,6 +5,8 @@ import (
 
 	"github.com/danielgg-coding/taiwanese-cuisine/models"
 	"github.com/stretchr/testify/assert"
+	"github.com/DATA-DOG/go-sqlmock"
+
 )
 
 func TestQueryALLCuisine(t *testing.T) {
