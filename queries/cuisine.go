@@ -6,6 +6,7 @@ import (
 	"github.com/danielgg-coding/taiwanese-cuisine/models"
 )
 
+// GetCuisine query cuisine by id from DB
 func GetCuisine(db *sql.DB, id int) (*models.Cuisine, error) {
 
 	var cuisine models.Cuisine
@@ -19,6 +20,7 @@ func GetCuisine(db *sql.DB, id int) (*models.Cuisine, error) {
 	return &cuisine, nil
 }
 
+// GetAllCuisine query all cuisine from DB
 func GetAllCuisine(db *sql.DB) ([]models.Cuisine, error) {
 
 	var rows *sql.Rows
