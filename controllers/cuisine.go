@@ -1,13 +1,17 @@
 package controllers
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/danielgg-coding/taiwanese-cuisine/queries"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+
+	"cloud.google.com/go/firestore"
 )
 
 // GetCuisine get cuisine by id
@@ -62,6 +66,21 @@ func VoteCuisine(db *sql.DB) gin.HandlerFunc {
 		losser := c.Query("losser")
 
 		c.String(200, fmt.Sprintf("id %s beats id %s", winner, losser))
+	}
+
+	return gin.HandlerFunc(fn)
+}
+
+// GetCuisineFirestore gets cuisine data from firestore
+func GetCuisineFirestore(client *firestore.Client) gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+
+		dsnap, err := client.Collection("cuisine").Doc("food").Get(context.Background())
+		if err != nil {
+			log.Fatalln(err)
+		}
+		m := dsnap.Data()
+		c.JSON(200, m)
 	}
 
 	return gin.HandlerFunc(fn)
