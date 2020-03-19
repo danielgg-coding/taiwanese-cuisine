@@ -7,9 +7,10 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/danielgg-coding/taiwanese-cuisine/queries"
+	"taiwanese-cuisine/elo"
+	"taiwanese-cuisine/queries"
+
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 
 	"cloud.google.com/go/firestore"
 )
@@ -81,6 +82,41 @@ func GetCuisineFirestore(client *firestore.Client) gin.HandlerFunc {
 		}
 		m := dsnap.Data()
 		c.JSON(200, m)
+	}
+
+	return gin.HandlerFunc(fn)
+}
+
+// VoteCuisineFirestore update cuisine data to firestore
+func VoteCuisineFirestore(client *firestore.Client) gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+
+		winnerID := c.Query("winner")
+		loserID := c.Query("loser")
+
+		winner, err := queries.GetCuisineScore(client, winnerID)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		loser, err := queries.GetCuisineScore(client, loserID)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		winner, loser = elo.Elorating(winner, loser)
+
+		err = queries.UpdateCuisineScore(client, winner)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		err = queries.UpdateCuisineScore(client, loser)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		c.String(200, fmt.Sprintf("id %s beats id %s", winnerID, loserID))
 	}
 
 	return gin.HandlerFunc(fn)

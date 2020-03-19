@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"log"
-	"strconv"
+
+	"taiwanese-cuisine/models"
 
 	"cloud.google.com/go/firestore"
-	"github.com/danielgg-coding/taiwanese-cuisine/models"
 )
 
 // GetCuisine query cuisine by id from DB
@@ -57,28 +57,24 @@ func GetAllCuisine(db *sql.DB) ([]models.Cuisine, error) {
 }
 
 // GetCuisineScore get current score of a cuisine
-func GetCuisineScore(client *firestore.Client, id int) (int64, error) {
-	dsnap, err := client.Collection("scores").Doc(strconv.Itoa(id)).Get(context.Background())
+func GetCuisineScore(client *firestore.Client, id string) (*models.FirestoreCuisine, error) {
+	dsnap, err := client.Collection("scores").Doc(id).Get(context.Background())
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	// Extract the docuemt's data into a vault of type FirestoreCuisine
-	var nyData models.FirestoreCuisine
-	if err := dsnap.DataTo(&nyData); err != nil {
-		return 0, err
+	var cuisine models.FirestoreCuisine
+	if err := dsnap.DataTo(&cuisine); err != nil {
+		return nil, err
 	}
 
-	return nyData.Score, nil
+	return &cuisine, nil
 }
 
 // UpdateCuisineScore update an entry to firestore
-func UpdateCuisineScore(client *firestore.Client, id int, score int64, played int64) error {
-	nyData := models.FirestoreCuisine{
-		Played: played,
-		Score:  score,
-	}
-	result, err := client.Collection("scores").Doc(strconv.Itoa(id)).Set(context.Background(), nyData)
+func UpdateCuisineScore(client *firestore.Client, cuisine *models.FirestoreCuisine) error {
+	result, err := client.Collection("scores").Doc(cuisine.ID).Set(context.Background(), cuisine)
 	if err != nil {
 		return err
 	}

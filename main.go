@@ -3,12 +3,14 @@ package main
 import (
 	"database/sql"
 
-	"github.com/danielgg-coding/taiwanese-cuisine/controllers"
+	"taiwanese-cuisine/controllers"
+
 	"github.com/gin-gonic/gin"
 
 	"log"
 
 	firebase "firebase.google.com/go"
+	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 )
@@ -38,6 +40,7 @@ func main() {
 	defer db.Close()
 
 	router.GET("/cuisinef/", controllers.GetCuisineFirestore(client))
+	router.GET("/votef", controllers.VoteCuisineFirestore(client))
 	router.GET("/cuisine/:cuisineId", controllers.GetCuisine(db))
 	router.GET("/cuisines", controllers.GetAllCuisine(db))
 	router.GET("/vote", controllers.VoteCuisine(db))

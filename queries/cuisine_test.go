@@ -3,9 +3,10 @@ package queries
 import (
 	"testing"
 
+	"taiwanese-cuisine/models"
+
 	_ "github.com/DATA-DOG/go-sqlmock"
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
-	"github.com/danielgg-coding/taiwanese-cuisine/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,20 +30,20 @@ func TestQueryALLCuisine(t *testing.T) {
 
 	var expectedCuisines []models.Cuisine
 
-	cuisine_1 := models.Cuisine{
+	cuisine1 := models.Cuisine{
 		ID:    1,
 		Name:  "水餃",
 		Score: 0,
 	}
 
-	cuisine_2 := models.Cuisine{
+	cuisine2 := models.Cuisine{
 		ID:    2,
 		Name:  "韭菜",
 		Score: 0,
 	}
 
-	expectedCuisines = append(expectedCuisines, cuisine_1)
-	expectedCuisines = append(expectedCuisines, cuisine_2)
+	expectedCuisines = append(expectedCuisines, cuisine1)
+	expectedCuisines = append(expectedCuisines, cuisine2)
 
 	assert.Equal(t, expectedCuisines, cuisines)
 
@@ -76,16 +77,16 @@ func TestQueryOneCuisine(t *testing.T) {
 
 	defer db.Close()
 
-	testingId := 1
+	testingID := 1
 
 	// testing with db containing correct rows
 	rows := sqlmock.NewRows([]string{"id", "name", "score"}).AddRow(1, "水餃", 0)
 
 	mock.ExpectQuery("SELECT (.+) FROM cuisine*").
-		WithArgs(testingId).
+		WithArgs(testingID).
 		WillReturnRows(rows)
 
-	cuisines, err := GetCuisine(db, testingId)
+	cuisines, err := GetCuisine(db, testingID)
 
 	expectedCuisine := models.Cuisine{
 		ID:    1,
@@ -99,10 +100,10 @@ func TestQueryOneCuisine(t *testing.T) {
 	rows = sqlmock.NewRows([]string{"id", "name", "score"})
 
 	mock.ExpectQuery("SELECT (.+) FROM cuisine*").
-		WithArgs(testingId).
+		WithArgs(testingID).
 		WillReturnRows(rows)
 
-	cuisines, err = GetCuisine(db, testingId)
+	cuisines, err = GetCuisine(db, testingID)
 
 	expectedCuisine = models.Cuisine{}
 	assert.Nil(t, cuisines)
@@ -111,10 +112,10 @@ func TestQueryOneCuisine(t *testing.T) {
 	rows = sqlmock.NewRows([]string{"id", "name", "score", "bad_column"}).AddRow(1, "水餃", 0, true)
 
 	mock.ExpectQuery("SELECT (.+) FROM cuisine").
-		WithArgs(testingId).
+		WithArgs(testingID).
 		WillReturnRows(rows)
 
-	cuisines, err = GetCuisine(db, testingId)
+	cuisines, err = GetCuisine(db, testingID)
 
 	assert.Nil(t, cuisines)
 }
