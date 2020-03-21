@@ -9,7 +9,8 @@ type Cuisine struct {
 
 // FirestoreCuisine ...
 type FirestoreCuisine struct {
-	ID     string `firestore:"id"`
-	Score  int64  `firestore:"score"`
-	Played int64  `firestore:"played"`
+	Name   string `firestore:"string"`
+	Image  string `firestore:"image"`
+	Score  int    `firestore:"score"`
+	Played int    `firestore:"played"`
 }

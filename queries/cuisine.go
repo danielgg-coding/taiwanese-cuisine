@@ -56,25 +56,46 @@ func GetAllCuisine(db *sql.DB) ([]models.Cuisine, error) {
 	return cuisines, nil
 }
 
-// GetCuisineScore get current score of a cuisine
-func GetCuisineScore(client *firestore.Client, id string) (*models.FirestoreCuisine, error) {
-	dsnap, err := client.Collection("scores").Doc(id).Get(context.Background())
+// GetCuisineFromFire get current info of a cuisine
+func GetCuisineFromFire(client *firestore.Client, id string) (*models.FirestoreCuisine, error) {
+	doc, err := client.Collection("cuisine").Doc(id).Get(context.Background())
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	// Extract the docuemt's data into a vault of type FirestoreCuisine
 	var cuisine models.FirestoreCuisine
-	if err := dsnap.DataTo(&cuisine); err != nil {
+	if err := doc.DataTo(&cuisine); err != nil {
 		return nil, err
 	}
-
 	return &cuisine, nil
 }
 
-// UpdateCuisineScore update an entry to firestore
-func UpdateCuisineScore(client *firestore.Client, cuisine *models.FirestoreCuisine) error {
-	result, err := client.Collection("scores").Doc(cuisine.ID).Set(context.Background(), cuisine)
+// GetCuisines get cuisines by id list from Firestore
+func GetCuisines(client *firestore.Client, ids []string) ([]*models.FirestoreCuisine, error) {
+	var docrefs []*firestore.DocumentRef
+	for _, id := range ids {
+		docrefs = append(docrefs, client.Collection("cuisine").Doc(id))
+	}
+
+	docs, err := client.GetAll(context.Background(), docrefs)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var cuisines []*models.FirestoreCuisine
+	for _, doc := range docs {
+		var cuisine models.FirestoreCuisine
+		if err := doc.DataTo(&cuisine); err != nil {
+			return nil, err
+		}
+		cuisines = append(cuisines, &cuisine)
+	}
+	return cuisines, nil
+}
+
+// UpdateCuisineToFire update an entry to firestore
+func UpdateCuisineToFire(client *firestore.Client, cuisine *models.FirestoreCuisine, id string) error {
+	result, err := client.Collection("cuisine").Doc(id).Set(context.Background(), cuisine)
 	if err != nil {
 		return err
 	}

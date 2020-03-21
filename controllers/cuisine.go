@@ -94,24 +94,29 @@ func VoteCuisineFirestore(client *firestore.Client) gin.HandlerFunc {
 		winnerID := c.Query("winner")
 		loserID := c.Query("loser")
 
-		winner, err := queries.GetCuisineScore(client, winnerID)
+		players, err := queries.GetCuisines(client, []string{winnerID, loserID})
 		if err != nil {
 			log.Fatalln(err)
 		}
+		winner, loser := players[0], players[1]
+		// winner, err := queries.GetCuisineFromFire(client, winnerID)
+		// if err != nil {
+		// 	log.Fatalln(err)
+		// }
 
-		loser, err := queries.GetCuisineScore(client, loserID)
-		if err != nil {
-			log.Fatalln(err)
-		}
+		// loser, err := queries.GetCuisineFromFire(client, loserID)
+		// if err != nil {
+		// 	log.Fatalln(err)
+		// }
 
 		winner, loser = elo.Elorating(winner, loser)
 
-		err = queries.UpdateCuisineScore(client, winner)
+		err = queries.UpdateCuisineToFire(client, winner, winnerID)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		err = queries.UpdateCuisineScore(client, loser)
+		err = queries.UpdateCuisineToFire(client, loser, loserID)
 		if err != nil {
 			log.Fatalln(err)
 		}
