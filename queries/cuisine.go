@@ -6,8 +6,9 @@ import (
 	"log"
 	"strconv"
 
-	"cloud.google.com/go/firestore"
 	"github.com/danielgg-coding/taiwanese-cuisine/models"
+
+	"cloud.google.com/go/firestore"
 )
 
 // GetCuisine query cuisine by id from DB
