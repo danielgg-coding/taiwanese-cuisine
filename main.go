@@ -6,8 +6,6 @@ import (
 	"github.com/danielgg-coding/taiwanese-cuisine/controllers"
 	"github.com/gin-gonic/gin"
 
-	"log"
-
 	firebase "firebase.google.com/go"
 	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/net/context"
@@ -29,7 +27,7 @@ func main() {
 	app, err := firebase.NewApp(context.Background(), nil, sa)
 
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 
 	// Initiate firestore client

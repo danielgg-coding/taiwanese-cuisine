@@ -60,7 +60,7 @@ func GetAllCuisine(db *sql.DB) ([]models.Cuisine, error) {
 func GetCuisineFromFire(client *firestore.Client, id string) (*models.FirestoreCuisine, error) {
 	doc, err := client.Collection("cuisine").Doc(id).Get(context.Background())
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 	// Extract the docuemt's data into a vault of type FirestoreCuisine
 	var cuisine models.FirestoreCuisine
@@ -80,7 +80,7 @@ func GetCuisines(client *firestore.Client, ids []string) ([]*models.FirestoreCui
 	docs, err := client.GetAll(context.Background(), docrefs)
 
 	if err != nil {
-		log.Fatalln(err)
+		panic(err)
 	}
 	var cuisines []*models.FirestoreCuisine
 	for _, doc := range docs {
