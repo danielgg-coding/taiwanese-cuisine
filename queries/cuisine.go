@@ -6,7 +6,7 @@ import (
 	"log"
 	"strconv"
 
-	"taiwanese-cuisine/models"
+	"github.com/danielgg-coding/taiwanese-cuisine/models"
 
 	"cloud.google.com/go/firestore"
 )
