@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"log"
-	"strconv"
 
 	"github.com/danielgg-coding/taiwanese-cuisine/models"
 
@@ -57,29 +56,46 @@ func GetAllCuisine(db *sql.DB) ([]models.Cuisine, error) {
 	return cuisines, nil
 }
 
-// GetCuisineScore get current score of a cuisine
-func GetCuisineScore(client *firestore.Client, id int) (int64, error) {
-	dsnap, err := client.Collection("scores").Doc(strconv.Itoa(id)).Get(context.Background())
+// GetCuisineFromFire get current info of a cuisine
+func GetCuisineFromFire(client *firestore.Client, id string) (*models.FirestoreCuisine, error) {
+	doc, err := client.Collection("cuisine").Doc(id).Get(context.Background())
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 	// Extract the docuemt's data into a vault of type FirestoreCuisine
-	var nyData models.FirestoreCuisine
-	if err := dsnap.DataTo(&nyData); err != nil {
-		return 0, err
+	var cuisine models.FirestoreCuisine
+	if err := doc.DataTo(&cuisine); err != nil {
+		return nil, err
 	}
-
-	return nyData.Score, nil
+	return &cuisine, nil
 }
 
-// UpdateCuisineScore update an entry to firestore
-func UpdateCuisineScore(client *firestore.Client, id int, score int64, played int64) error {
-	nyData := models.FirestoreCuisine{
-		Played: played,
-		Score:  score,
+// GetCuisines get cuisines by id list from Firestore
+func GetCuisines(client *firestore.Client, ids []string) ([]*models.FirestoreCuisine, error) {
+	var docrefs []*firestore.DocumentRef
+	for _, id := range ids {
+		docrefs = append(docrefs, client.Collection("cuisine").Doc(id))
 	}
-	result, err := client.Collection("scores").Doc(strconv.Itoa(id)).Set(context.Background(), nyData)
+
+	docs, err := client.GetAll(context.Background(), docrefs)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var cuisines []*models.FirestoreCuisine
+	for _, doc := range docs {
+		var cuisine models.FirestoreCuisine
+		if err := doc.DataTo(&cuisine); err != nil {
+			return nil, err
+		}
+		cuisines = append(cuisines, &cuisine)
+	}
+	return cuisines, nil
+}
+
+// UpdateCuisineToFire update an entry to firestore
+func UpdateCuisineToFire(client *firestore.Client, cuisine *models.FirestoreCuisine, id string) error {
+	result, err := client.Collection("cuisine").Doc(id).Set(context.Background(), cuisine)
 	if err != nil {
 		return err
 	}

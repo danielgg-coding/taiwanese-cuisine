@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
+
+	"github.com/danielgg-coding/taiwanese-cuisine/elo"
 
 	"github.com/danielgg-coding/taiwanese-cuisine/queries"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 
 	"cloud.google.com/go/firestore"
 )
@@ -82,6 +84,50 @@ func GetCuisineFirestore(client *firestore.Client) gin.HandlerFunc {
 		}
 		m := dsnap.Data()
 		c.JSON(200, m)
+	}
+
+	return gin.HandlerFunc(fn)
+}
+
+// VoteCuisineFirestore update cuisine data to firestore
+func VoteCuisineFirestore(client *firestore.Client) gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+
+		winnerID := c.Query("winner")
+		loserID := c.Query("loser")
+
+		start := time.Now()
+		players, err := queries.GetCuisines(client, []string{winnerID, loserID})
+		if err != nil {
+			c.String(404, fmt.Sprint("Id not found"))
+			panic(err)
+			// log.Fatalln(err)
+		}
+		winner, loser := players[0], players[1]
+		fmt.Println(time.Now().Sub(start))
+		// winner, err := queries.GetCuisineFromFire(client, winnerID)
+		// if err != nil {
+		// 	log.Fatalln(err)
+		// }
+
+		// loser, err := queries.GetCuisineFromFire(client, loserID)
+		// if err != nil {
+		// 	log.Fatalln(err)
+		// }
+
+		winner, loser = elo.Elorating(winner, loser)
+
+		err = queries.UpdateCuisineToFire(client, winner, winnerID)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		err = queries.UpdateCuisineToFire(client, loser, loserID)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		c.String(200, fmt.Sprintf("id %s beats id %s", winnerID, loserID))
 	}
 
 	return gin.HandlerFunc(fn)
