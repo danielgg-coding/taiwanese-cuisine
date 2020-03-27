@@ -20,11 +20,12 @@ jobs:
       - run:
           name: Building Docker image
           command: |
-            docker build -t danielgg/taiwanese-cuisine .
+            docker build -t temp .
       - run:
           name: Unit testing
           command: |
-            docker run danielgg/taiwanese-cuisine go test ./... --coverpkg=./...
+            docker run temp go test ./... --coverpkg=./...
+
   build_and_deploy:
     docker:
       - image: circleci/golang:1.12
@@ -32,7 +33,12 @@ jobs:
       - checkout
       - run: 
           name: Running unit tests
-          command: |
+          command: |            
+            echo 'export TAG=0.1.${CIRCLE_BUILD_NUM}' >> $BASH_ENV
+            echo 'export IMAGE_NAME=taiwanese-cuisine' >> $BASH_ENV 
+            docker build -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push $DOCKER_LOGIN/$IMAGE_NAME:$TAG
       
 workflows:
   version: 2
@@ -40,5 +46,5 @@ workflows:
     jobs:
       - build_and_test
       - build_and_deploy: 
-          requires: 
-            - build_and_test
+          # requires: 
+          #   - build_and_test
