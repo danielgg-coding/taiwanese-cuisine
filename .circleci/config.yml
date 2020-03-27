@@ -1,25 +1,19 @@
-# Golang CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
-workflows:
-  version: 2
-  test:
-    jobs:
-      - test-1.12
-      - test-1.13
-      - test-1.14
+
+template: &test-template
+
+  working_directory: /go/src/github.com/danielgg-coding/taiwanese-cuisine
+  steps:
+    - checkout
+    - run: go get -v -t -d ./...
+    - run: go test --coverpkg=./... -coverprofile=coverage.txt -covermode=atomic ./...
+    - run: bash <(curl -s https://codecov.io/bash)
+
 jobs:
   test-1.12: &test-template
+    <<: *test-template
     docker:
       - image: circleci/golang:1.12
-
-    working_directory: /go/src/github.com/danielgg-coding/taiwanese-cuisine
-    steps:
-      - checkout
-      - run: go get -v -t -d ./...
-      - run: go test --coverpkg=./... -coverprofile=coverage.txt -covermode=atomic ./...
-      - run: bash <(curl -s https://codecov.io/bash)
 
   test-1.13:
     <<: *test-template
@@ -30,4 +24,11 @@ jobs:
     <<: *test-template
     docker:
       - image: circleci/golang:1.14
-  
+      
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-1.12
+      - test-1.13
+      - test-1.14
