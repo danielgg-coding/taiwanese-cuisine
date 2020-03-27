@@ -11,7 +11,7 @@ version: 2
 
 jobs:
   
-  build:
+  build_and_test:
     docker:
       - image: circleci/golang:1.12
     steps:
@@ -20,24 +20,23 @@ jobs:
           name: Building Docker image
           command: |
             docker build -t danielgg/taiwanese-cuisine .
-
-  test:
+      - run:
+          name: Unit testing
+          command: |
+            docker run danielgg/taiwanese-cuisine go test ./... --coverpkg=./...
+  build_and_deploy:
+    docker:
+      - image: circleci/golang:1.12
     steps:
       - run: 
           name: Running unit tests
           command: |
-            docker run danielgg/taiwanese-cuisine go test ./... --coverpkg=./...
-  
-  # deploy:
-  #   <<: *test-template
-  #   docker:
-  #     - image: circleci/golang:1.14
       
 workflows:
   version: 2
   cicd:
     jobs:
-      - build
-      - test: 
+      - build_and_test
+      - build_and_deploy: 
           requires: 
-            - build
+            - build_and_test
