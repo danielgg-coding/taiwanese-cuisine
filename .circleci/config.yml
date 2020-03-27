@@ -1,13 +1,5 @@
 version: 2
 
-# template: &test-template
-#   working_directory: /go/src/github.com/danielgg-coding/taiwanese-cuisine
-#   steps:
-#     - checkout
-#     - run: go get -v -t -d ./...
-#     - run: go test --coverpkg=./... -coverprofile=coverage.txt -covermode=atomic ./...
-#     - run: bash <(curl -s https://codecov.io/bash)
-
 jobs:
   
   build_and_test:
@@ -54,5 +46,9 @@ workflows:
     jobs:
       - build_and_test
       - build_and_deploy
-          # requires: 
-          #   - build_and_test
+          requires: 
+            - build_and_test
+          filters:
+            branches:
+              only:
+                - /master.*/
