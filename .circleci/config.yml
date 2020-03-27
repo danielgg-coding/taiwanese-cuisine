@@ -49,6 +49,6 @@ workflows:
           requires: 
             - build_and_test
           filters:
-            branchs:
+            branches:
               only:
                 - /(dev|release|master).*/
