@@ -11,7 +11,10 @@ version: 2
 
 jobs:
   build:
+    docker:
+      - image: circleci/golang:1.12
     steps:
+      - checkout
       - run:
           name: Building Docker image
           command: |
