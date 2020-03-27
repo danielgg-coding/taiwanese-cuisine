@@ -42,7 +42,7 @@ jobs:
         command: |
           docker build -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
 
-      -run:
+      - run:
         name: Push to Dockerhub
         command: |
           echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
