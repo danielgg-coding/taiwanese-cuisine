@@ -32,13 +32,13 @@ jobs:
       - run:
           name: Building Docker image
           command: |
-            docker build -t $DOCKER_LOGIN/$IMAGE_NAME_${CIRCLE_BRANCH}:$TAG .
+            docker build -t $DOCKER_LOGIN/$IMAGE_NAME_${CIRCLE_BRANCH:1}:$TAG .
 
       - run:
           name: Push to Dockerhub
           command: |
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push $DOCKER_LOGIN/$IMAGE_NAME_${CIRCLE_BRANCH}:$TAG
+            docker push $DOCKER_LOGIN/$IMAGE_NAME_${CIRCLE_BRANCH:1}:$TAG
       
 workflows:
   version: 2
