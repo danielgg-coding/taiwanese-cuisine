@@ -1,34 +1,37 @@
 version: 2
 
-template: &test-template
+# template: &test-template
 
-  working_directory: /go/src/github.com/danielgg-coding/taiwanese-cuisine
-  steps:
-    - checkout
-    - run: go get -v -t -d ./...
-    - run: go test --coverpkg=./... -coverprofile=coverage.txt -covermode=atomic ./...
-    - run: bash <(curl -s https://codecov.io/bash)
+#   working_directory: /go/src/github.com/danielgg-coding/taiwanese-cuisine
+#   steps:
+#     - checkout
+#     - run: go get -v -t -d ./...
+#     - run: go test --coverpkg=./... -coverprofile=coverage.txt -covermode=atomic ./...
+#     - run: bash <(curl -s https://codecov.io/bash)
 
 jobs:
-  test-1.12:
-    <<: *test-template
-    docker:
-      - image: circleci/golang:1.12
+  build:
+    steps:
+      - run:
+          name: Building Docker image
+          command: |
+            docker build -t danielgg/taiwanese-cuisine .
 
-  test-1.13:
-    <<: *test-template
-    docker:
-      - image: circleci/golang:1.13
+  test:
+    steps:
+      - run: 
+        name: Running unit tests
+        command: |
+          docker run danielgg/taiwanese-cuisine go test ./... --coverpkg=./...
   
-  test-1.14:
-    <<: *test-template
-    docker:
-      - image: circleci/golang:1.14
+  # deploy:
+  #   <<: *test-template
+  #   docker:
+  #     - image: circleci/golang:1.14
       
 workflows:
   version: 2
-  test:
+  cicd:
     jobs:
-      - test-1.12
-      - test-1.13
-      - test-1.14
+      - build
+      - test
