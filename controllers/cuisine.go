@@ -4,11 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"strconv"
+	"time"
 
-	"taiwanese-cuisine/elo"
-	"taiwanese-cuisine/queries"
+	"github.com/danielgg-coding/taiwanese-cuisine/elo"
+
+	"github.com/danielgg-coding/taiwanese-cuisine/queries"
 
 	"github.com/gin-gonic/gin"
 
@@ -78,7 +79,7 @@ func GetCuisineFirestore(client *firestore.Client) gin.HandlerFunc {
 
 		dsnap, err := client.Collection("cuisine").Doc("food").Get(context.Background())
 		if err != nil {
-			log.Fatalln(err)
+			panic(err)
 		}
 		m := dsnap.Data()
 		c.JSON(200, m)
@@ -94,31 +95,37 @@ func VoteCuisineFirestore(client *firestore.Client) gin.HandlerFunc {
 		winnerID := c.Query("winner")
 		loserID := c.Query("loser")
 
+		start := time.Now()
 		players, err := queries.GetCuisines(client, []string{winnerID, loserID})
 		if err != nil {
-			log.Fatalln(err)
+			c.String(404, fmt.Sprint("Id not found"))
+			panic(err)
+			// panic(err)
 		}
 		winner, loser := players[0], players[1]
+		fmt.Println(time.Now().Sub(start))
 		// winner, err := queries.GetCuisineFromFire(client, winnerID)
 		// if err != nil {
-		// 	log.Fatalln(err)
+		// 	panic(err)
 		// }
 
 		// loser, err := queries.GetCuisineFromFire(client, loserID)
 		// if err != nil {
-		// 	log.Fatalln(err)
+		// 	panic(err)
 		// }
 
-		winner, loser = elo.Elorating(winner, loser)
+		winner.Score, loser.Score = elo.Elorating(winner.Score, loser.Score)
+		winner.Played++
+		loser.Played++
 
 		err = queries.UpdateCuisineToFire(client, winner, winnerID)
 		if err != nil {
-			log.Fatalln(err)
+			panic(err)
 		}
 
 		err = queries.UpdateCuisineToFire(client, loser, loserID)
 		if err != nil {
-			log.Fatalln(err)
+			panic(err)
 		}
 
 		c.String(200, fmt.Sprintf("id %s beats id %s", winnerID, loserID))

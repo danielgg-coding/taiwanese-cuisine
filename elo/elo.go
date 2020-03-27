@@ -2,7 +2,6 @@ package elo
 
 import (
 	"math"
-	"taiwanese-cuisine/models"
 )
 
 const (
@@ -17,6 +16,7 @@ func prob(r1, r2 int) float64 {
 }
 
 // Elorating is the function calculate new rating score
+<<<<<<< HEAD
 func Elorating(winner, loser *models.FirestoreCuisine) (*models.FirestoreCuisine, *models.FirestoreCuisine) {
 	prob := prob(loser.Score, winner.Score)
 	delta := int(K * (1 - prob))
@@ -28,4 +28,14 @@ func Elorating(winner, loser *models.FirestoreCuisine) (*models.FirestoreCuisine
 	loser.Played++
 
 	return winner, loser
+=======
+func Elorating(winnerScore, loserScore int) (int, int) {
+	prob := prob(winnerScore, loserScore)
+	delta := int(K * (1 - prob))
+
+	winnerScore += delta
+	loserScore -= delta
+
+	return winnerScore, loserScore
+>>>>>>> 9a272c18d9f1d1faac822150595c3603eac9e58f
 }

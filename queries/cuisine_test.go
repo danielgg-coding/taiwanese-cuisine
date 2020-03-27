@@ -3,7 +3,7 @@ package queries
 import (
 	"testing"
 
-	"taiwanese-cuisine/models"
+	"github.com/danielgg-coding/taiwanese-cuisine/models"
 
 	_ "github.com/DATA-DOG/go-sqlmock"
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
