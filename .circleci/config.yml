@@ -10,6 +10,7 @@ version: 2
 #     - run: bash <(curl -s https://codecov.io/bash)
 
 jobs:
+  
   build:
     docker:
       - image: circleci/golang:1.12
@@ -23,9 +24,9 @@ jobs:
   test:
     steps:
       - run: 
-        name: Running unit tests
-        command: |
-          docker run danielgg/taiwanese-cuisine go test ./... --coverpkg=./...
+          name: Running unit tests
+          command: |
+            docker run danielgg/taiwanese-cuisine go test ./... --coverpkg=./...
   
   # deploy:
   #   <<: *test-template
@@ -37,4 +38,6 @@ workflows:
   cicd:
     jobs:
       - build
-      - test
+      - test: 
+          requires: 
+            - build
