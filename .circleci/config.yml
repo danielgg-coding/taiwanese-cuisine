@@ -10,7 +10,7 @@ template: &test-template
     - run: bash <(curl -s https://codecov.io/bash)
 
 jobs:
-  test-1.12: &test-template
+  test-1.12:
     <<: *test-template
     docker:
       - image: circleci/golang:1.12
