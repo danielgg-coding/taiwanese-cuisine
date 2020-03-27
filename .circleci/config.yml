@@ -1,34 +1,54 @@
 version: 2
 
-template: &test-template
-
-  working_directory: /go/src/github.com/danielgg-coding/taiwanese-cuisine
-  steps:
-    - checkout
-    - run: go get -v -t -d ./...
-    - run: go test --coverpkg=./... -coverprofile=coverage.txt -covermode=atomic ./...
-    - run: bash <(curl -s https://codecov.io/bash)
-
 jobs:
-  test-1.12:
-    <<: *test-template
+  
+  build_and_test:
     docker:
       - image: circleci/golang:1.12
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Building Docker image
+          command: |
+            docker build -t temp .
+      - run:
+          name: Unit testing
+          command: |
+            docker run temp go test ./... --coverpkg=./...
 
-  test-1.13:
-    <<: *test-template
+  build_and_deploy:
     docker:
-      - image: circleci/golang:1.13
-  
-  test-1.14:
-    <<: *test-template
-    docker:
-      - image: circleci/golang:1.14
+      - image: circleci/golang:1.12
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: 
+          name: Deploying
+          command: |            
+            echo 'export TAG=0.1.${CIRCLE_BUILD_NUM}' >> $BASH_ENV
+            echo 'export IMAGE_NAME=taiwanese-cuisine' >> $BASH_ENV 
+
+      - run:
+          name: Building Docker image
+          command: |
+            docker build -t $DOCKER_LOGIN/$IMAGE_NAME_${CIRCLE_BRANCH}:$TAG .
+
+      - run:
+          name: Push to Dockerhub
+          command: |
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push $DOCKER_LOGIN/$IMAGE_NAME_${CIRCLE_BRANCH}:$TAG
       
 workflows:
   version: 2
-  test:
+  cicd:
     jobs:
-      - test-1.12
-      - test-1.13
-      - test-1.14
+      - build_and_test
+      - build_and_deploy:
+          requires: 
+            - build_and_test
+          filters:
+            branches:
+              only:
+                - /(dev|release|master).*/
