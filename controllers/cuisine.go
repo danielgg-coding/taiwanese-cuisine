@@ -16,6 +16,13 @@ import (
 	"cloud.google.com/go/firestore"
 )
 
+func Index() gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+		c.String(200, "Everthing is fine, YAY !!!")
+	}
+	return gin.HandlerFunc(fn)
+}
+
 // GetCuisine get cuisine by id
 func GetCuisine(db *sql.DB) gin.HandlerFunc {
 
