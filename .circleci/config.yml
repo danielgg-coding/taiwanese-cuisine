@@ -59,10 +59,10 @@ jobs:
           command: |
             cd eb_deployment
             eb list | grep "taiwanese-cuisine" && echo taiwanese-cuisine | eb terminate taiwanese-cuisine 
-            echo '{
+            echo "{
                 "AWSEBDockerrunVersion": "1",
                 "Image": {
-                  "Name": "${IMAGE_NAME}:$TAG",
+                  "Name": $IMAGE_NAME:$TAG,
                   "Update": "true"
                 },
                 "Ports": [
@@ -70,7 +70,7 @@ jobs:
                     "ContainerPort": "8081"
                   }
                 ]
-            }' >> Dockerrun.aws.json
+            }" >> Dockerrun.aws.json
             eb init -p docker taiwanese-cuisine
             eb create -r us-west-2 -i t3.micro backend
   
