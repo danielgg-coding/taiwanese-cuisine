@@ -81,11 +81,11 @@ workflows:
   version: 2
   cicd:
     jobs:
-      # - build_and_test
+      - build_and_test
       - build_and_deploy
-          # requires: 
-          #   - build_and_test
-          # filters:
-          #   branches:
-          #     only:
-          #       - /(dev|release|master).*/
+          requires: 
+            - build_and_test
+          filters:
+            branches:
+              only:
+                - /(release|master).*/
