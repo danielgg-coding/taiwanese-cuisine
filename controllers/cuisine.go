@@ -15,6 +15,7 @@ import (
 	"cloud.google.com/go/firestore"
 )
 
+// For ELB health check
 func Index() gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 		c.String(200, "Everthing is fine, YAY !!!")
