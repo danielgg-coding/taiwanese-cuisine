@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"strconv"
@@ -84,12 +83,11 @@ func VoteCuisine(db *sql.DB) gin.HandlerFunc {
 func GetCuisineFirestore(client *firestore.Client) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 
-		dsnap, err := client.Collection("cuisine").Doc("food").Get(context.Background())
+		cuisines, err := queries.GetAllFromFire(client)
 		if err != nil {
 			panic(err)
 		}
-		m := dsnap.Data()
-		c.JSON(200, m)
+		c.JSON(200, cuisines)
 	}
 
 	return gin.HandlerFunc(fn)

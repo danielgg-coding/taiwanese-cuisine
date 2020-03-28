@@ -70,6 +70,29 @@ func GetCuisineFromFire(client *firestore.Client, id string) (*models.FirestoreC
 	return &cuisine, nil
 }
 
+// GetAllFromFire get all cuisine from firestore
+func GetAllFromFire(client *firestore.Client) ([]*models.FirestoreCuisine, error) {
+	docrefs, err := client.Collection("cuisine").DocumentRefs(context.Background()).GetAll()
+	if err != nil {
+		panic(err)
+	}
+
+	docs, err := client.GetAll(context.Background(), docrefs)
+	if err != nil {
+		panic(err)
+	}
+
+	var cuisines []*models.FirestoreCuisine
+	for _, doc := range docs {
+		var cuisine models.FirestoreCuisine
+		if err := doc.DataTo(&cuisine); err != nil {
+			return nil, err
+		}
+		cuisines = append(cuisines, &cuisine)
+	}
+	return cuisines, nil
+}
+
 // GetCuisines get cuisines by id list from Firestore
 func GetCuisines(client *firestore.Client, ids []string) ([]*models.FirestoreCuisine, error) {
 	var docrefs []*firestore.DocumentRef
