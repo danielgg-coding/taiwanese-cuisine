@@ -58,7 +58,6 @@ jobs:
           name: Deploy to AWS EB
           command: |
             cd eb_deployment
-            eb list --all | grep backend && echo backend | eb terminate backend
             echo "{
                 "AWSEBDockerrunVersion": "1",
                 "Image": {
@@ -72,6 +71,7 @@ jobs:
                 ]
             }" >> Dockerrun.aws.json
             eb init -p docker taiwanese-cuisine
+            eb list --all | grep backend && echo backend | eb terminate backend
             eb create -r us-west-2 -i t3.micro backend
   
 workflows:
