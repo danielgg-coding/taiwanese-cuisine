@@ -36,6 +36,7 @@ jobs:
             sudo apt-get install python-pip python-dev build-essential awscli
             sudo pip install --upgrade setuptools
             sudo pip install awsebcli --upgrade 
+            mkdir eb_deployment
 
       - run:
           name: Fetching Firestore credential from s3
@@ -52,7 +53,26 @@ jobs:
           command: |
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
             docker push ${IMAGE_NAME}:$TAG
-      
+
+      - run:
+          name: Deploy to AWS EB
+          command: |
+            cd eb_deployment
+            echo "
+            "AWSEBDockerrunVersion": "1",
+            "Image": {
+              "Name": "${IMAGE_NAME}:$TAG",
+              "Update": "true"
+            },
+            "Ports": [
+              {
+                "ContainerPort": "8081"
+              }
+            ]
+            " >> Dockerrun.aws.json
+            eb init -p docker taiwanese-cuisine
+            eb create -r us-west-2 -i t3.micro backend
+  
 workflows:
   version: 2
   cicd:
