@@ -58,18 +58,19 @@ jobs:
           name: Deploy to AWS EB
           command: |
             cd eb_deployment
-            echo "
-            "AWSEBDockerrunVersion": "1",
-            "Image": {
-              "Name": "${IMAGE_NAME}:$TAG",
-              "Update": "true"
-            },
-            "Ports": [
-              {
-                "ContainerPort": "8081"
-              }
-            ]
-            " >> Dockerrun.aws.json
+            eb terminate taiwanese-cuisine
+            echo '{
+                "AWSEBDockerrunVersion": "1",
+                "Image": {
+                  "Name": "${IMAGE_NAME}:$TAG",
+                  "Update": "true"
+                },
+                "Ports": [
+                  {
+                    "ContainerPort": "8081"
+                  }
+                ]
+            }' >> Dockerrun.aws.json
             eb init -p docker taiwanese-cuisine
             eb create -r us-west-2 -i t3.micro backend
   
