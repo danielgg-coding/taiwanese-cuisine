@@ -58,7 +58,7 @@ jobs:
           name: Deploy to AWS EB
           command: |
             cd eb_deployment
-            eb terminate taiwanese-cuisine
+            eb list | grep "taiwanese-cuisine" && echo taiwanese-cuisine | eb terminate taiwanese-cuisine 
             echo '{
                 "AWSEBDockerrunVersion": "1",
                 "Image": {
