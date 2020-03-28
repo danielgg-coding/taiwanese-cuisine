@@ -58,7 +58,7 @@ jobs:
           name: Deploy to AWS EB
           command: |
             cd eb_deployment
-            eb list | grep backend && echo backend | eb terminate backend
+            eb list --all | grep backend && echo backend | eb terminate backend
             echo "{
                 "AWSEBDockerrunVersion": "1",
                 "Image": {
