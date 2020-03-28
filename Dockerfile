@@ -8,6 +8,6 @@ RUN go mod download
 
 COPY . .
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["go", "run", "main.go"]
