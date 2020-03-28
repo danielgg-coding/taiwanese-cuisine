@@ -24,22 +24,59 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: 
-          name: Deploying
+          name: Setting image name and tag name
           command: |            
             echo 'export TAG=0.1.${CIRCLE_BUILD_NUM}' >> $BASH_ENV
-            echo 'export IMAGE_NAME=taiwanese-cuisine' >> $BASH_ENV 
+            echo 'export IMAGE_NAME=$DOCKER_LOGIN/taiwanese-cuisine' >> $BASH_ENV 
+            
+      - run: 
+          name: Setting up AWS env
+          command: |
+            sudo apt-get -y -qq update 
+            sudo apt-get install python-pip python-dev build-essential awscli
+            sudo pip install --upgrade setuptools
+            sudo pip install awsebcli --upgrade 
+            mkdir eb_deployment
+
+      - run:
+          name: Fetching Firestore credential from s3
+          command: |
+            aws s3 sync s3://taiwanese-cuisine . 
 
       - run:
           name: Building Docker image
           command: |
-            docker build -t $DOCKER_LOGIN/${IMAGE_NAME}-${CIRCLE_BRANCH}:$TAG .
+            docker build -t ${IMAGE_NAME}:$TAG .
 
       - run:
           name: Push to Dockerhub
           command: |
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push $DOCKER_LOGIN/${IMAGE_NAME}-${CIRCLE_BRANCH}:$TAG
-      
+            docker push ${IMAGE_NAME}:$TAG
+
+      - run:
+          name: Deploy to AWS EB
+          command: |
+            cd eb_deployment
+            JSON=' 
+            {
+                "AWSEBDockerrunVersion": 1,
+                "Image": {
+                  "Name": "%s",
+                  "Update": true
+                },
+                "Ports": [
+                  {
+                    "ContainerPort": 8081
+                  }
+                ]
+            }\n
+            '
+            printf "$JSON" "$IMAGE_NAME:$TAG" >> Dockerrun.aws.json
+            eb init -p docker --region ap-northeast-2 taiwanese-cuisine
+            eb list --all | grep backend && echo backend | eb terminate backend
+            eb create -r ap-northeast-2 -i t3.micro --elb-type application -c taiwanese-cuisine-backend backend
+  
 workflows:
   version: 2
   cicd:
@@ -51,4 +88,4 @@ workflows:
           filters:
             branches:
               only:
-                - /(dev|release|master).*/
+                - /(release|master).*/

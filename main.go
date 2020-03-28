@@ -36,7 +36,7 @@ func main() {
 
 	defer client.Close()
 	defer db.Close()
-
+	router.GET("/", controllers.Index())
 	router.GET("/cuisinef/", controllers.GetCuisineFirestore(client))
 	router.GET("/votef", controllers.VoteCuisineFirestore(client))
 	router.GET("/cuisine/:cuisineId", controllers.GetCuisine(db))
