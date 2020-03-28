@@ -30,17 +30,17 @@ jobs:
             echo 'export IMAGE_NAME=taiwanese-cuisine' >> $BASH_ENV 
 
       - run: 
-        name: Setting up AWS env
-        command: |
-          sudo apt-get -y -qq update 
-          sudo apt-get install python-pip python-dev build-essential awscli
-          sudo pip install --upgrade setuptools
-          sudo pip install awsebcli --upgrade 
+          name: Setting up AWS env
+          command: |
+            sudo apt-get -y -qq update 
+            sudo apt-get install python-pip python-dev build-essential awscli
+            sudo pip install --upgrade setuptools
+            sudo pip install awsebcli --upgrade 
 
       - run:
-        name: Fetching Firestore credential from s3
-        command: |
-          aws s3 sync s3://taiwanese-cuisine . 
+          name: Fetching Firestore credential from s3
+          command: |
+            aws s3 sync s3://taiwanese-cuisine . 
 
       - run:
           name: Building Docker image
