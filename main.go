@@ -42,5 +42,5 @@ func main() {
 	router.GET("/cuisine/:cuisineId", controllers.GetCuisine(db))
 	router.GET("/cuisines", controllers.GetAllCuisine(db))
 	router.GET("/vote", controllers.VoteCuisine(db))
-	router.Run() // listen and serve on 0.0.0.0:8080
+	router.Run(":8081") // listen and serve on 0.0.0.0:8081
 }
