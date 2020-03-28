@@ -26,9 +26,10 @@ jobs:
       - run: 
           name: Setting image name and tag name
           command: |            
-            echo 'export TAG=0.1.${CIRCLE_BUILD_NUM}' >> $BASH_ENV
-            echo 'export IMAGE_NAME=$DOCKER_LOGIN/taiwanese-cuisine' >> $BASH_ENV 
-            
+            echo 'export PROJECT_NAME=taiwanese-cuisine' >> $BASH_ENV
+            echo 'export IMAGE_NAME=$PROJECT_NAME-$CIRCLE_BRANCH' >> $BASH_ENV
+            echo 'export TAG=0.2.$CIRCLE_BUILD_NUM' >> $BASH_ENV
+             
       - run: 
           name: Setting up AWS env
           command: |
@@ -46,13 +47,13 @@ jobs:
       - run:
           name: Building Docker image
           command: |
-            docker build -t ${IMAGE_NAME}:$TAG .
+            docker build -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
 
       - run:
           name: Push to Dockerhub
           command: |
             echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push ${IMAGE_NAME}:$TAG
+            docker push $DOCKER_LOGIN/$IMAGE_NAME:$TAG
 
       - run:
           name: Deploy to AWS EB
@@ -72,10 +73,10 @@ jobs:
                 ]
             }\n
             '
-            printf "$JSON" "$IMAGE_NAME:$TAG" >> Dockerrun.aws.json
-            eb init -p docker --region ap-northeast-2 taiwanese-cuisine
+            printf "$JSON" "$DOCKER_LOGIN/$IMAGE_NAME:$TAG" >> Dockerrun.aws.json
+            eb init -p docker --region ap-northeast-2 $PROJECT_NAME-$CIRCLE_BRANCH
             eb list --all | grep backend && echo backend | eb terminate backend
-            eb create -r ap-northeast-2 -i t3.micro --elb-type application -c taiwanese-cuisine-backend backend
+            eb create -r ap-northeast-2 -i t3.nano --elb-type application -c $PROJECT_NAME-backend-$CIRCLE_BRANCH backend
   
 workflows:
   version: 2
@@ -88,4 +89,4 @@ workflows:
           filters:
             branches:
               only:
-                - /(release|master).*/
+                - /(dev|release|master).*/
