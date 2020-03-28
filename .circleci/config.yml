@@ -58,7 +58,7 @@ jobs:
           name: Deploy to AWS EB
           command: |
             cd eb_deployment
-            JSON = ' 
+            JSON=' 
             {
                 "AWSEBDockerrunVersion": 1,
                 "Image": {
