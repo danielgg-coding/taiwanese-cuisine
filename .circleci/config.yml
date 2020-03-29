@@ -75,7 +75,8 @@ jobs:
             '
             printf "$JSON" "$DOCKER_LOGIN/$IMAGE_NAME:$TAG" >> Dockerrun.aws.json
             eb init -p docker --region ap-northeast-2 $PROJECT_NAME
-            eb list --all | grep backend-$CIRCLE_BRANCH && echo backend-$CIRCLE_BRANCH | eb terminate backend-$CIRCLE_BRANCH
+            eb list --all | grep backend-$CIRCLE_BRANCH && \
+            eb deploy backend-$CIRCLE_BRANCH || \
             eb create -r ap-northeast-2 -i t3.micro --elb-type application -c $PROJECT_NAME-backend-$CIRCLE_BRANCH backend-$CIRCLE_BRANCH
   
 workflows:
