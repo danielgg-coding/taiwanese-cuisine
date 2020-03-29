@@ -5,6 +5,7 @@ jobs:
   build_and_test:
     docker:
       - image: circleci/golang:1.12
+    parallelism: 4
     steps:
       - checkout
       - setup_remote_docker
@@ -20,6 +21,7 @@ jobs:
   build_and_deploy:
     docker:
       - image: circleci/golang:1.12
+    parallelism: 4
     steps:
       - checkout
       - setup_remote_docker
@@ -92,6 +94,7 @@ jobs:
 
 workflows:
   version: 2
+
   cicd:
     jobs:
       - build_and_test
