@@ -78,6 +78,8 @@ jobs:
             printf "$JSON" "$DOCKER_LOGIN/$IMAGE_NAME:$TAG" >> Dockerrun.aws.json
             eb init -p docker --region ap-northeast-2 $PROJECT_NAME
             if [[ $(eb list --all | grep -c $EB_EVIRONMENT_NAME) -gt 0 ]]; then
+              eb deploy $EB_EVIRONMENT_NAME
+            else
               if [[ $(echo "$CIRCLE_BRANCH" | grep -c "master") -gt 0 ]]; then
                   eb create \
                   -r ap-northeast-2 \
@@ -93,10 +95,7 @@ jobs:
                   --single \ 
                   $EB_EVIRONMENT_NAME
               fi
-            else
-              eb deploy $EB_EVIRONMENT_NAME
             fi
-
 
 workflows:
   version: 2
