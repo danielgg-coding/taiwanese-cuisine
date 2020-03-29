@@ -75,10 +75,28 @@ jobs:
             '
             printf "$JSON" "$DOCKER_LOGIN/$IMAGE_NAME:$TAG" >> Dockerrun.aws.json
             eb init -p docker --region ap-northeast-2 $PROJECT_NAME
-            eb list --all | grep backend-$CIRCLE_BRANCH && \
-            eb deploy backend-$CIRCLE_BRANCH || \
-            eb create -r ap-northeast-2 -i t3.micro --elb-type application -c $PROJECT_NAME-backend-$CIRCLE_BRANCH backend-$CIRCLE_BRANCH
-  
+            if [[ $(eb list --all | grep -c backend-$CIRCLE_BRANCH) -gt 0 ]]; then
+              if [[ $(echo "$CIRCLE_BRANCH" | grep -c "master") -gt 0 ]]; then
+                  eb create \
+                  -r ap-northeast-2 \
+                  -i t3.micro \
+                  --elb-type application \
+                  -c $PROJECT_NAME-backend-$CIRCLE_BRANCH \
+                  backend-$CIRCLE_BRANCH
+              else
+                  eb create \
+                  -r ap-northeast-2 \
+                  -i t3.micro \
+                  --elb-type application \
+                  -c $PROJECT_NAME-backend-$CIRCLE_BRANCH \
+                  --single \ 
+                  backend-$CIRCLE_BRANCH
+              fi
+            else
+              eb deploy backend-$CIRCLE_BRANCH
+          fi
+
+
 workflows:
   version: 2
   cicd:
