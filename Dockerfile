@@ -8,6 +8,9 @@ RUN go mod download
 
 COPY . .
 
+RUN go build main.go
+
 EXPOSE 8081
 
-CMD ["go", "run", "main.go"]
+# CMD ["go", "run", "main.go"]
+CMD ["./main"]
