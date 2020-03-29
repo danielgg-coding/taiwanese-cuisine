@@ -94,7 +94,7 @@ jobs:
               fi
             else
               eb deploy backend-$CIRCLE_BRANCH
-          fi
+            fi
 
 
 workflows:
