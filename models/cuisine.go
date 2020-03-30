@@ -14,3 +14,11 @@ type FirestoreCuisine struct {
 	Score  int    `firestore:"score"`
 	Played int    `firestore:"played"`
 }
+
+type DynamodbCuisine struct {
+	Id     int
+	Name   string
+	Image  string
+	Score  int
+	Played int
+}
