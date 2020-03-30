@@ -88,6 +88,7 @@ func GetAllFromFire(client *firestore.Client) ([]*models.FirestoreCuisine, error
 		if err := doc.DataTo(&cuisine); err != nil {
 			return nil, err
 		}
+		cuisine.ID = doc.Ref.ID
 		cuisines = append(cuisines, &cuisine)
 	}
 	return cuisines, nil
