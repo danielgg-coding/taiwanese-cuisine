@@ -17,7 +17,7 @@ func prob(r1, r2 int) float64 {
 
 // Elorating is the function calculates new rating scores
 func Elorating(winnerScore, loserScore int) (int, int) {
-	prob := prob(winnerScore, loserScore)
+	prob := prob(loserScore, winnerScore)
 	delta := int(K * (1 - prob))
 
 	winnerScore += delta
