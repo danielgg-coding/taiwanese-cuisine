@@ -1,10 +1,10 @@
 package main
 
 import (
-	"database/sql"
-
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/danielgg-coding/taiwanese-cuisine/controllers"
-
 	"github.com/gin-gonic/gin"
 
 	firebase "firebase.google.com/go"
@@ -17,11 +17,11 @@ func main() {
 
 	router := gin.Default()
 
-	db, err := sql.Open("mysql", "root:thedaniel@tcp(localhost:3306)/taiwancuisine")
+	// db, err := sql.Open("mysql", "root:thedaniel@tcp(localhost:3306)/taiwancuisine")
 
-	if err != nil {
-		panic(err.Error()) // proper error handling instead of panic in your app
-	}
+	// if err != nil {
+	// 	panic(err.Error()) // proper error handling instead of panic in your app
+	// }
 
 	// Initiate firebase app
 	sa := option.WithCredentialsFile("./serviceAccountKey.json")
@@ -34,13 +34,22 @@ func main() {
 	// Initiate firestore client
 	client, err := app.Firestore(context.Background())
 
+	dynamodbSess, err := session.NewSession(&aws.Config{
+		Region: aws.String("ap-northeast-2")},
+	)
+
+	// Create DynamoDB client
+	dyanmodbClient := dynamodb.New(dynamodbSess)
+
 	defer client.Close()
-	defer db.Close()
+
 	router.GET("/", controllers.Index())
 	router.GET("/cuisinef/", controllers.GetCuisineFirestore(client))
 	router.GET("/votef", controllers.VoteCuisineFirestore(client))
-	router.GET("/cuisine/:cuisineId", controllers.GetCuisine(db))
-	router.GET("/cuisines", controllers.GetAllCuisine(db))
-	router.GET("/vote", controllers.VoteCuisine(db))
+	router.GET("/cuisinec", controllers.GetCuisineDynamo(dyanmodbClient))
+	router.GET("/votec", controllers.VoteCuisineDynamo(dyanmodbClient))
+	// router.GET("/cuisine/:cuisineId", controllers.GetCuisine(db))
+	// router.GET("/cuisines", controllers.GetAllCuisine(db))
+	// router.GET("/vote", controllers.VoteCuisine(db))
 	router.Run(":8081") // listen and serve on 0.0.0.0:8081
 }
