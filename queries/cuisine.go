@@ -71,7 +71,7 @@ func GetCuisineFromFire(client *firestore.Client, id string) (*models.FirestoreC
 }
 
 // GetAllFromFire get all cuisine from firestore
-func GetAllFromFire(client *firestore.Client) ([]*models.FirestoreCuisine, error) {
+func GetAllFromFire(client *firestore.Client) (map[string]*models.FirestoreCuisine, error) {
 	docrefs, err := client.Collection("cuisine").DocumentRefs(context.Background()).GetAll()
 	if err != nil {
 		panic(err)
@@ -82,13 +82,13 @@ func GetAllFromFire(client *firestore.Client) ([]*models.FirestoreCuisine, error
 		panic(err)
 	}
 
-	var cuisines []*models.FirestoreCuisine
-	for _, doc := range docs {
+	cuisines := make(map[string]*models.FirestoreCuisine)
+	for idx, doc := range docs {
 		var cuisine models.FirestoreCuisine
 		if err := doc.DataTo(&cuisine); err != nil {
 			return nil, err
 		}
-		cuisines = append(cuisines, &cuisine)
+		cuisines[docrefs[idx].ID] = &cuisine
 	}
 	return cuisines, nil
 }

@@ -13,5 +13,4 @@ type FirestoreCuisine struct {
 	Image  string `firestore:"image"`
 	Score  int    `firestore:"score"`
 	Played int    `firestore:"played"`
-	ID     string `firestore:"id"`
 }

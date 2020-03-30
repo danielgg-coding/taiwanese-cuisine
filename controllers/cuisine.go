@@ -119,7 +119,6 @@ func VoteCuisineFirestore(client *firestore.Client) gin.HandlerFunc {
 		// if err != nil {
 		// 	panic(err)
 		// }
-
 		winner.Score, loser.Score = elo.Elorating(winner.Score, loser.Score)
 		winner.Played++
 		loser.Played++
