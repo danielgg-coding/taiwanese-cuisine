@@ -16,7 +16,7 @@ type FirestoreCuisine struct {
 }
 
 type DynamodbCuisine struct {
-	Id     int
+	ID     int `dynamodbav:"Id"`
 	Name   string
 	Image  string
 	Score  int

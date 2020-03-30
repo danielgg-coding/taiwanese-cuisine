@@ -148,7 +148,7 @@ func UpdateDynamodb(dyanmodbClient *dynamodb.DynamoDB, item models.DynamodbCuisi
 		TableName: aws.String(tableName),
 		Key: map[string]*dynamodb.AttributeValue{
 			"Id": {
-				N: aws.String(strconv.Itoa(item.Id)),
+				N: aws.String(strconv.Itoa(item.ID)),
 			},
 		},
 		ReturnValues:     aws.String("UPDATED_NEW"),
