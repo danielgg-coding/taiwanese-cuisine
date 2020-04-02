@@ -1,5 +1,5 @@
 # Build the Go API
-FROM golang:1.13 AS go-go_builder
+FROM golang:1.13 AS go_builder
 ADD . /app
 WORKDIR /app/backend
 RUN go mod download
@@ -9,7 +9,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-w" -a -o /main .
 
 # Build the React application
 FROM node:alpine AS node_builder
-COPY --from=builder /app/frontend ./
+COPY --from=go_builder /app/frontend ./
 RUN npm install
 RUN npm run build
 
