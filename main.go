@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -48,8 +50,6 @@ func main() {
 	router.GET("/votef", controllers.VoteCuisineFirestore(client))
 	router.GET("/cuisinec", controllers.GetCuisineDynamo(dyanmodbClient))
 	router.GET("/votec", controllers.VoteCuisineDynamo(dyanmodbClient))
-	// router.GET("/cuisine/:cuisineId", controllers.GetCuisine(db))
-	// router.GET("/cuisines", controllers.GetAllCuisine(db))
-	// router.GET("/vote", controllers.VoteCuisine(db))
-	router.Run(":8081") // listen and serve on 0.0.0.0:8081
+	port := os.ExpandEnv(":$PORT")
+	router.Run(port) // listen and serve on 0.0.0.0:8081
 }
