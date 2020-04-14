@@ -13,12 +13,12 @@ import "shards-ui/dist/css/shards.min.css"
 function App() {
   return (
     <Main>
-    <Router>
+      <Router>
         <Switch>
-          <Route path='/ranking/' children={<Ranking/>} />
-          <Route path='/' children={<Compare/>} />
+          <Route path='/ranking/' children={<Ranking />} />
+          <Route path='/' children={<Compare />} />
         </Switch>
-    </Router>
+      </Router>
     </Main>
   );
 }
