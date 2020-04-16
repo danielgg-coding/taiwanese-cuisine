@@ -5,18 +5,21 @@
             "name": "backend",
             "image": "waynecoding/multi-backend",
             "essential": true,
-            "hostname": "backend"
+            "hostname": "backend",
+            "memory": 128
         },
         {
             "name": "frontend",
             "image": "waynecoding/multi-frontend",
             "essential": true,
-            "hostname": "frontend"
+            "hostname": "frontend",
+            "memory": 128
         },
         {
             "name": "nginx",
             "image": "waynecoding/multi-nginx",
             "essential": true,
+            "memory": 128,
             "portMappings": [
                 {
                     "hostPort": 80,
