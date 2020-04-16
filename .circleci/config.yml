@@ -3,8 +3,7 @@
 version: 2
 jobs:
   test_fronted:
-    machine:
-      image: circleci/classic:latest
+    machine: true
     steps:
       - checkout
       - run: |
@@ -13,8 +12,7 @@ jobs:
           docker run -e CI=true frontend-test npm run test
 
   test_backend:
-    machine:
-      image: circleci/classic:latest
+    machine: true
     steps:
       - checkout
       - run: |
@@ -23,8 +21,7 @@ jobs:
           docker run backend-test go test ./...
 
   build:
-    machine:
-      image: circleci/classic:latest
+    machine: true
 
     steps:
       - checkout
