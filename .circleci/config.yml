@@ -31,23 +31,24 @@ jobs:
           name: Installing deployment dependencies
           command: |
             pyenv global 3.7.0
-            python --version
             sudo pip install -U awsebcli
-            eb --version
-      - run: |
-          echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-
-      - run: docker build -t $DOCKER_USER/multi-frontend ./frontend
-      - run: docker build -t $DOCKER_USER/multi-backend ./backend
-      - run: docker build -t $DOCKER_USER/multi-nginx ./nginx
-
-      - run: docker push $DOCKER_USER/multi-frontend
-      - run: docker push $DOCKER_USER/multi-backend
-      - run: docker push $DOCKER_USER/multi-nginx
+      - run:
+          name: Build docker image
+          command: |
+            docker build -t $DOCKER_USER/multi-frontend ./frontend
+            docker build -t $DOCKER_USER/multi-backend ./backend
+            docker build -t $DOCKER_USER/multi-nginx ./nginx
+      - run:
+          name: Push docker image to Dockerhub
+          command: |
+            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+            docker push $DOCKER_USER/multi-frontend
+            docker push $DOCKER_USER/multi-backend
+            docker push $DOCKER_USER/multi-nginx
 
       - run:
           name: Deploying
-          command: eb deploy MultiDocker-env
+          command: python -m eb deploy MultiDocker-env
 workflows:
   version: 2
   CI:
