@@ -55,7 +55,7 @@ workflows:
       - test_fronted
       - test_backend
       - build:
-          context: aws
+          context: AWS
           requires:
             - test_fronted
             - test_backend
