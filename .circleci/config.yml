@@ -30,8 +30,10 @@ jobs:
       - run:
           name: Installing deployment dependencies
           command: |
-            pyenv global 3.7.0
-            sudo pip install -U awsebcli
+            sudo apt-get -y -qq update
+            sudo apt-get install python-pip python-dev build-essential awscli
+            sudo pip install --upgrade setuptools
+            sudo pip install awsebcli --upgrade
       - run:
           name: Build docker image
           command: |
@@ -48,10 +50,10 @@ jobs:
 
       - run:
           name: Deploying
-          command: python -m eb deploy MultiDocker-env
+          command: eb deploy MultiDocker-env
 workflows:
   version: 2
-  CI:
+  CICD:
     jobs:
       - test_fronted
       - test_backend
