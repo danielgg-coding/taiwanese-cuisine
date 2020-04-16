@@ -25,25 +25,25 @@ jobs:
   build:
     machine:
       image: circleci/classic:latest
+
     steps:
       - checkout
       - run:
           name: Installing deployment dependencies
           command: |
             sudo apt-get -y -qq update
-            sudo apt-get install python-pip python-dev build-essential
-            sudo pip install --upgrade setuptools
-            sudo pip install awsebcli --upgrade
+            sudo apt-get install python3.7
+            sudo pip3 install awsebcli --upgrade
       - run: |
           echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
 
-      - run: docker build -t $DOCKER_USER/multi-frontend:$CIRCLE_BRANCH ./frontend
-      - run: docker build -t $DOCKER_USER/multi-backend:$CIRCLE_BRANCH ./backend
-      - run: docker build -t $DOCKER_USER/multi-nginx:$CIRCLE_BRANCH ./nginx
+      - run: docker build -t $DOCKER_USER/multi-frontend ./frontend
+      - run: docker build -t $DOCKER_USER/multi-backend ./backend
+      - run: docker build -t $DOCKER_USER/multi-nginx ./nginx
 
-      - run: docker push $DOCKER_USER/multi-frontend:$CIRCLE_BRANCH
-      - run: docker push $DOCKER_USER/multi-backend:$CIRCLE_BRANCH
-      - run: docker push $DOCKER_USER/multi-nginx:$CIRCLE_BRANCH
+      - run: docker push $DOCKER_USER/multi-frontend
+      - run: docker push $DOCKER_USER/multi-backend
+      - run: docker push $DOCKER_USER/multi-nginx
 
       - run:
           name: Deploying
