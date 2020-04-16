@@ -3,7 +3,8 @@
 version: 2
 jobs:
   test_fronted:
-    machine: true
+    machine:
+      image: ubuntu-1604:201903-01
     steps:
       - checkout
       - run: |
@@ -12,7 +13,8 @@ jobs:
           docker run -e CI=true frontend-test npm run test
 
   test_backend:
-    machine: true
+    machine:
+      image: ubuntu-1604:201903-01
     steps:
       - checkout
       - run: |
@@ -21,8 +23,8 @@ jobs:
           docker run backend-test go test ./...
 
   build:
-    machine: true
-
+    machine:
+      image: ubuntu-1604:201903-01
     steps:
       - checkout
       - run:
