@@ -31,7 +31,7 @@ jobs:
           name: Installing deployment dependencies
           command: |
             pyenv global 3.7.0
-            sudo pip3 install -U awsebcli
+            sudo pip install -U awsebcli
       - run: |
           echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
 
