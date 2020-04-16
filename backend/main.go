@@ -1,10 +1,12 @@
 package main
 
 import (
-	"github.com/danielgg-coding/taiwanese-cuisine/backend/controllers"
-	"github.com/gin-gonic/gin"
+	"encoding/base64"
+	"io/ioutil"
 
 	firebase "firebase.google.com/go"
+	"github.com/danielgg-coding/taiwanese-cuisine/backend/controllers"
+	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
@@ -12,10 +14,19 @@ import (
 
 func main() {
 
+	key, err := ioutil.ReadFile("./serviceAccountKey")
+	if err != nil {
+		panic(err)
+	}
+	decodeKey, err := base64.StdEncoding.DecodeString(string(key))
+	if err != nil {
+		panic(err)
+	}
+
 	router := gin.Default()
 
 	// Initiate firebase app
-	sa := option.WithCredentialsFile("./serviceAccountKey.json")
+	sa := option.WithCredentialsJSON(decodeKey)
 	app, err := firebase.NewApp(context.Background(), nil, sa)
 
 	if err != nil {
