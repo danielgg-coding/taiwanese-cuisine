@@ -1,105 +1,68 @@
+# - run: |
+#           echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
 version: 2
-
 jobs:
-  
-  build_and_test:
-    docker:
-      - image: circleci/golang:1.12
+  test_fronted:
+    machine:
+      image: ubuntu-1604:201903-01
     steps:
       - checkout
-      - setup_remote_docker
-      - run:
-          name: Building Docker image
-          command: |
-            docker build -t temp .
-      - run:
-          name: Unit testing
-          command: |
-            docker run temp go test ./... --coverpkg=./...
+      - run: |
+          docker build -t frontend-test -f ./frontend/Dockerfile.dev ./frontend
+      - run: |
+          docker run -e CI=true frontend-test npm run test
 
-  build_and_deploy:
-    docker:
-      - image: circleci/golang:1.12
+  test_backend:
+    machine:
+      image: ubuntu-1604:201903-01
     steps:
       - checkout
-      - setup_remote_docker
-      - run: 
-          name: Setting image name and tag name
-          command: |            
-            echo 'export PROJECT_NAME=taiwanese-cuisine' >> $BASH_ENV
-            echo 'export IMAGE_NAME=$PROJECT_NAME-$CIRCLE_BRANCH' >> $BASH_ENV
-            echo 'export TAG=0.2.$CIRCLE_BUILD_NUM' >> $BASH_ENV
-            echo 'export EB_EVIRONMENT_NAME=backend-$CIRCLE_BRANCH' >> $BASH_ENV
-            echo 'export EB_CNAME=$PROJECT_NAME-backend-$CIRCLE_BRANCH' >> $BASH_ENV
-             
-      - run: 
-          name: Setting up AWS env
+      - run: |
+          docker build -t backend-test -f ./backend/Dockerfile.dev ./backend
+      - run: |
+          docker run backend-test go test ./...
+
+  build:
+    machine:
+      image: ubuntu-1604:201903-01
+    steps:
+      - checkout
+      - run:
+          name: Installing deployment dependencies
           command: |
-            sudo apt-get -y -qq update 
+            sudo apt-get -y -qq update
             sudo apt-get install python-pip python-dev build-essential awscli
             sudo pip install --upgrade setuptools
-            sudo pip install awsebcli --upgrade 
-            mkdir eb_deployment
+            sudo pip install awsebcli --upgrade
+      - run:
+          name: Build docker image
+          command: |
+            docker build -t $DOCKER_USER/multi-frontend ./frontend
+            docker build -t $DOCKER_USER/multi-backend ./backend
+            docker build -t $DOCKER_USER/multi-nginx ./nginx
+      - run:
+          name: Push docker image to Dockerhub
+          command: |
+            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+            docker push $DOCKER_USER/multi-frontend
+            docker push $DOCKER_USER/multi-backend
+            docker push $DOCKER_USER/multi-nginx
 
       - run:
-          name: Fetching Firestore credential from s3
-          command: |
-            aws s3 sync s3://taiwanese-cuisine . 
-
-      - run:
-          name: Building Docker image
-          command: |
-            docker build -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
-
-      - run:
-          name: Push to Dockerhub
-          command: |
-            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push $DOCKER_LOGIN/$IMAGE_NAME:$TAG
-
-      - run:
-          name: Deploy to AWS EB
-          command: |
-            cd eb_deployment
-            JSON=' 
-            {
-                "AWSEBDockerrunVersion": 1,
-                "Image": {
-                  "Name": "%s",
-                  "Update": true
-                },
-                "Ports": [
-                  {
-                    "ContainerPort": 8081
-                  }
-                ]
-            }\n
-            '
-            printf "$JSON" "$DOCKER_LOGIN/$IMAGE_NAME:$TAG" >> Dockerrun.aws.json
-            
-            eb init -p docker --region ap-northeast-2 $PROJECT_NAME
-            
-            if [[ $(eb list --all | grep -c $EB_EVIRONMENT_NAME) -gt 0 ]]; then
-              eb deploy $EB_EVIRONMENT_NAME
-            else
-              if [[ $(echo "$CIRCLE_BRANCH" | grep -c "master") -gt 0 ]]; then
-                  eb create -i t3.micro --elb-type application -c $EB_CNAME $EB_EVIRONMENT_NAME
-              else
-                  eb create -i t3.micro --single -c $EB_CNAME $EB_EVIRONMENT_NAME
-              fi
-            fi
-
-
+          name: Deploying
+          command: eb deploy MultiDocker-env
 workflows:
   version: 2
-
-  cicd:
+  CICD:
     jobs:
-      - build_and_test
-      - build_and_deploy:
-          requires: 
-            - build_and_test
+      - test_fronted
+      - test_backend
+      - build:
+          context: AWS
+          requires:
+            - test_fronted
+            - test_backend
           filters:
             branches:
               only:
-                - /(dev|release|master).*/
+                - master

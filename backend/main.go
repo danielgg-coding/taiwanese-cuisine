@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/danielgg-coding/taiwanese-cuisine/backend/controllers"
-	"github.com/gin-gonic/gin"
+	"os"
 
 	firebase "firebase.google.com/go"
+	"github.com/danielgg-coding/taiwanese-cuisine/backend/controllers"
+	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
@@ -12,10 +13,13 @@ import (
 
 func main() {
 
+	seed := os.Getenv("SEED")
+	key := DecryptFile("serviceAccountKey", seed)
+
 	router := gin.Default()
 
 	// Initiate firebase app
-	sa := option.WithCredentialsFile("./serviceAccountKey.json")
+	sa := option.WithCredentialsJSON(key)
 	app, err := firebase.NewApp(context.Background(), nil, sa)
 
 	if err != nil {
