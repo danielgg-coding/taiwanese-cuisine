@@ -1,8 +1,7 @@
 package main
 
 import (
-	"encoding/base64"
-	"io/ioutil"
+	"os"
 
 	firebase "firebase.google.com/go"
 	"github.com/danielgg-coding/taiwanese-cuisine/backend/controllers"
@@ -14,19 +13,13 @@ import (
 
 func main() {
 
-	key, err := ioutil.ReadFile("./serviceAccountKey")
-	if err != nil {
-		panic(err)
-	}
-	decodeKey, err := base64.StdEncoding.DecodeString(string(key))
-	if err != nil {
-		panic(err)
-	}
+	seed := os.Getenv("SEED")
+	key := DecryptFile("serviceAccountKey", seed)
 
 	router := gin.Default()
 
 	// Initiate firebase app
-	sa := option.WithCredentialsJSON(decodeKey)
+	sa := option.WithCredentialsJSON(key)
 	app, err := firebase.NewApp(context.Background(), nil, sa)
 
 	if err != nil {

@@ -8,6 +8,8 @@ services:
     ports:
       - "3050:80"
   backend:
+    environment:
+      - SEED
     build:
       dockerfile: Dockerfile.dev
       context: ./backend
