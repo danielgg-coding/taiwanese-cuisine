@@ -1,33 +1,68 @@
-# Golang CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-go/ for more details
+# - run: |
+#           echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
 version: 2
-workflows:
-  version: 2
-  test:
-    jobs:
-      - test-1.12
-      - test-1.13
-      - test-1.14
 jobs:
-  test-1.12: &test-template
-    docker:
-      - image: circleci/golang:1.12
-
-    working_directory: /go/src/github.com/danielgg-coding/taiwanese-cuisine
+  test_fronted:
+    machine:
+      image: ubuntu-1604:201903-01
     steps:
       - checkout
-      - run: go get -v -t -d ./...
-      - run: go test --coverpkg=./... -coverprofile=coverage.txt -covermode=atomic ./...
-      - run: bash <(curl -s https://codecov.io/bash)
+      - run: |
+          docker build -t frontend-test -f ./frontend/Dockerfile.dev ./frontend
+      - run: |
+          docker run -e CI=true frontend-test npm run test
 
-  test-1.13:
-    <<: *test-template
-    docker:
-      - image: circleci/golang:1.13
-  
-  test-1.14:
-    <<: *test-template
-    docker:
-      - image: circleci/golang:1.14
-  
+  test_backend:
+    machine:
+      image: ubuntu-1604:201903-01
+    steps:
+      - checkout
+      - run: |
+          docker build -t backend-test -f ./backend/Dockerfile.dev ./backend
+      - run: |
+          docker run backend-test go test ./...
+
+  build:
+    machine:
+      image: ubuntu-1604:201903-01
+    steps:
+      - checkout
+      - run:
+          name: Installing deployment dependencies
+          command: |
+            sudo apt-get -y -qq update
+            sudo apt-get install python-pip python-dev build-essential awscli
+            sudo pip install --upgrade setuptools
+            sudo pip install awsebcli --upgrade
+      - run:
+          name: Build docker image
+          command: |
+            docker build -t $DOCKER_USER/multi-frontend ./frontend
+            docker build -t $DOCKER_USER/multi-backend ./backend
+            docker build -t $DOCKER_USER/multi-nginx ./nginx
+      - run:
+          name: Push docker image to Dockerhub
+          command: |
+            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+            docker push $DOCKER_USER/multi-frontend
+            docker push $DOCKER_USER/multi-backend
+            docker push $DOCKER_USER/multi-nginx
+
+      - run:
+          name: Deploying
+          command: eb deploy MultiDocker-env
+workflows:
+  version: 2
+  CICD:
+    jobs:
+      - test_fronted
+      - test_backend
+      - build:
+          context: AWS
+          requires:
+            - test_fronted
+            - test_backend
+          filters:
+            branches:
+              only:
+                - master
