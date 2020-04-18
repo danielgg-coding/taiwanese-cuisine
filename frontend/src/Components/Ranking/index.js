@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { DataView } from '@aragon/ui'
 import CroppedImg from '../CroppedImg'
 
-import { getList } from '../Compare/utils';
+import { getList } from '../../api';
 
 function Ranking() {
 

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ButtonBase } from '@aragon/ui';
 import { Card, CardHeader, CardBody, Button } from 'shards-react';
-import { getList, vote } from './utils';
+import { getList, vote } from '../../api';
 import CroppedImg from '../CroppedImg';
 
 function chooseFromList(targetList) {
