@@ -42,7 +42,7 @@ function Compare() {
   }, []);
 
   const onClickOptionA = () => {
-    vote(foodList[optionAIdx].ID, foodList[optionBIdx].ID);
+    vote(foodList[optionAIdx].id, foodList[optionBIdx].id);
     if (indexList.length === 0) {
       setDone(true);
       return;
@@ -54,7 +54,7 @@ function Compare() {
   };
 
   const onClickOptionB = () => {
-    vote(foodList[optionBIdx].ID, foodList[optionAIdx].ID);
+    vote(foodList[optionBIdx].id, foodList[optionAIdx].id);
     if (indexList.length === 0) {
       setDone(true);
       return;
@@ -83,10 +83,10 @@ function Compare() {
             <CroppedImg 
               width={350}
               height={300}
-              url={foodList.length === 0 ? 'https://place-hold.it/300x200' : foodList[optionAIdx].Image}
+              url={foodList.length === 0 ? 'https://place-hold.it/300x200' : foodList[optionAIdx].image}
             />
             <CardBody>
-            <div style={{fontSize: 25}} >{foodList.length === 0 ? '' : foodList[optionAIdx].Name}</div>
+            <div style={{fontSize: 25}} >{foodList.length === 0 ? '' : foodList[optionAIdx].name}</div>
             </CardBody>
             </ButtonBase>
           </Card>
@@ -98,10 +98,10 @@ function Compare() {
             <CroppedImg 
               width={350}
               height={300}
-              url={foodList.length === 0 ? 'https://place-hold.it/300x200' : foodList[optionBIdx].Image}
+              url={foodList.length === 0 ? 'https://place-hold.it/300x200' : foodList[optionBIdx].image}
             />
             <CardBody>
-              <div style={{fontSize: 25}} >{ foodList.length === 0 ? '' : foodList[optionBIdx].Name}</div>
+              <div style={{fontSize: 25}} >{ foodList.length === 0 ? '' : foodList[optionBIdx].name}</div>
             </CardBody>
             </ButtonBase>
           </Card>

@@ -1,10 +1,6 @@
 
 export const vote = async (winner, loser) => {
-  fetch(`/api/votef?loser=${loser}&winner=${winner}`).then(res => {
-    console.log(res)
-  }).catch(error => {
-    console.error(error)
-  })
+  fetch(`/api/votef?loser=${loser}&winner=${winner}`)
 
 };
 

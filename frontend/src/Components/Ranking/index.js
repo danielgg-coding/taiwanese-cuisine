@@ -25,10 +25,10 @@ function Ranking() {
         renderEntry={(item, index) => {
           return [
             index + 1,
-            <CroppedImg url={item.Image} width={200} height={120}/>,
-            <div style={{fontSize:25}}> {item.Name} </div>,
-            item.Score,
-            item.Played
+            <CroppedImg url={item.image} width={200} height={120}/>,
+            <div style={{fontSize:25}}> {item.name} </div>,
+            item.score,
+            item.played
           ]
         }}
         entriesPerPage={5}
