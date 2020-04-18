@@ -76,7 +76,9 @@ function Compare() {
         </div> : <div style={{ textAlign: 'center', }}>
         <div style={{ padding: '3%', display: 'inline-block' }}>
           <Card style={{ maxWidth: '650' }}>
-          <ButtonBase onClick={onClickOptionA}>
+          <ButtonBase 
+          disabled={done}
+          onClick={onClickOptionA}>
             <CardHeader>選項A</CardHeader>
             <CroppedImg 
               width={350}
@@ -91,7 +93,7 @@ function Compare() {
         </div>
         <div style={{ padding: '3%', display: 'inline-block' }}>
           <Card style={{ maxWidth: '500' }}>
-          <ButtonBase onClick={onClickOptionB}>
+          <ButtonBase disabled={done} onClick={onClickOptionB}>
             <CardHeader>選項B</CardHeader>
             <CroppedImg 
               width={350}
