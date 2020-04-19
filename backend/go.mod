@@ -1,4 +1,4 @@
-module github.com/danielgg-coding/taiwanese-cuisine
+module github.com/danielgg-coding/taiwanese-cuisine/backend
 
 go 1.12
 
