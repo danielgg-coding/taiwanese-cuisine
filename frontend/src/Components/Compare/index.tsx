@@ -9,6 +9,7 @@ import CenterMessage from '../common/CenterMessage';
 import type { food } from '../../types'
 
 const MIN_PLAYED_RESULT = 5;
+const MAX_REPEAT = 5;
 
 function chooseFromList(targetList: number[]): number {
   const random = targetList[Math.floor(Math.random() * targetList.length)];
@@ -19,30 +20,28 @@ function removeFromList(list: number[], items:number[]): number[] {
   return list.filter((element) => !items.includes(element));
 }
 
-function initialAB(indexs: number[]): number[] {
-  const shuffled = indexs.sort(() => 0.5 - Math.random());
-  let selected = shuffled.slice(0, 2);
-  return selected;
-}
-
 function Compare() {
   const history = useHistory();
 
   // Can go to result after 10 plays
   const [countPlayed, setCountPlayed] = useState(0);
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  
+  // const [winnderHistory, setWinnerHistory] = useState<number[]>([])
+  const [winnerHistory, setWinnerHistory] = useState<number[]>([])
 
   const [done, setDone] = useState<boolean>(false);
   const [foodList, setFoodList] = useState<food[]>([]);
   const [indexList, setIndexList] = useState<number[]>([]);
+  // index of the indexList
   const [optionAIdx, setOptionAIdx] = useState<number>(0);
   const [optionBIdx, setOptionBIdx] = useState<number>(0);
 
   // init states
   useMemo(async () => {
     const _foodList = await getList();
-    const initIndexs = Array.from(Array(_foodList.length).keys());
-    const [a, b] = initialAB(initIndexs);
+    const initIndexs = Array.from(Array(_foodList.length).keys()).sort(() => 0.5 - Math.random());
+    const [a, b] = initIndexs.slice(0,2)
     
     setOptionAIdx(a);
     setOptionBIdx(b);
@@ -58,21 +57,44 @@ function Compare() {
     }
   }, [indexList, isLoading])
 
+  const updateBothIdxs = () => {
+    if (indexList.length < 2) {
+      setDone(true)
+      return
+    }
+    const [newAIdx, newBIdx] = indexList.slice(0,2)
+    setIndexList(indexList.slice(2))
+    setOptionAIdx(newAIdx)
+    setOptionBIdx(newBIdx)
+  }
+
   const onClickOptionA = () => {
+    
     setCountPlayed(countPlayed + 1);
     vote(foodList[optionAIdx].id, foodList[optionBIdx].id);
-    const newOptionB = chooseFromList(indexList);
-    setIndexList(removeFromList(indexList, [newOptionB]));
-    setOptionBIdx(newOptionB);
-    
+    setWinnerHistory(winnerHistory.concat(optionAIdx))
+
+    if(winnerHistory.filter(idx => idx === optionAIdx).length > MAX_REPEAT) {
+      updateBothIdxs()
+    } else {
+      const newOptionB = indexList[0];
+      setIndexList(indexList.slice(1));
+      setOptionBIdx(newOptionB);
+    }
   };
 
   const onClickOptionB = () => {
     setCountPlayed(countPlayed + 1);
     vote(foodList[optionBIdx].id, foodList[optionAIdx].id);
-    const newOptionA = chooseFromList(indexList);
-    setIndexList(removeFromList(indexList, [newOptionA]));
-    setOptionAIdx(newOptionA);
+
+    setWinnerHistory(winnerHistory.concat(optionBIdx))
+    if(winnerHistory.filter(idx => idx === optionBIdx).length > MAX_REPEAT) {
+      updateBothIdxs()
+    } else {
+      const newOptionA = indexList[0];
+      setIndexList(indexList.slice(1));
+      setOptionAIdx(newOptionA);
+    }    
   };
 
   return <div>
