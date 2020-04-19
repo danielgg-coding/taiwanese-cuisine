@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { DataView } from '@aragon/ui'
-import CroppedImg from '../CroppedImg'
+import CroppedImg from '../common/CroppedImg'
 
 import { getList } from '../../api';
 
@@ -10,7 +10,7 @@ function Ranking() {
 
   useMemo(async()=>{
     const _list = await getList()
-    const sortedList = _list.sort((a, b) => a.Score > b.Score ? -1 : 1)
+    const sortedList = _list.sort((a, b) => a.score > b.score ? -1 : 1)
     setList(sortedList)
   }, [])
 
