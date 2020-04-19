@@ -15,8 +15,8 @@ function chooseFromList(targetList: number[]): number {
   return random;
 }
 
-function removeFromList(list: number[], item:number): number[] {
-  return list.filter((element) => element !== item);
+function removeFromList(list: number[], items:number[]): number[] {
+  return list.filter((element) => !items.includes(element));
 }
 
 function initialAB(indexs: number[]): number[] {
@@ -38,16 +38,16 @@ function Compare() {
   const [optionAIdx, setOptionAIdx] = useState<number>(0);
   const [optionBIdx, setOptionBIdx] = useState<number>(0);
 
+  // init states
   useMemo(async () => {
     const _foodList = await getList();
-    const initIndexs = Array.from(Array(11).keys());
+    const initIndexs = Array.from(Array(_foodList.length).keys());
     const [a, b] = initialAB(initIndexs);
+    
     setOptionAIdx(a);
     setOptionBIdx(b);
-    let _list = removeFromList(initIndexs, a);
-    _list = removeFromList(_list, b);
+    setIndexList(removeFromList(initIndexs, [a, b]));
     setFoodList(_foodList);
-    setIndexList(_list);
     setIsLoading(false)
   }, []);
 
@@ -62,7 +62,7 @@ function Compare() {
     setCountPlayed(countPlayed + 1);
     vote(foodList[optionAIdx].id, foodList[optionBIdx].id);
     const newOptionB = chooseFromList(indexList);
-    setIndexList(removeFromList(indexList, newOptionB));
+    setIndexList(removeFromList(indexList, [newOptionB]));
     setOptionBIdx(newOptionB);
     
   };
@@ -71,7 +71,7 @@ function Compare() {
     setCountPlayed(countPlayed + 1);
     vote(foodList[optionBIdx].id, foodList[optionAIdx].id);
     const newOptionA = chooseFromList(indexList);
-    setIndexList(removeFromList(indexList, newOptionA));
+    setIndexList(removeFromList(indexList, [newOptionA]));
     setOptionAIdx(newOptionA);
   };
 
