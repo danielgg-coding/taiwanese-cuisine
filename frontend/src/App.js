@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { HashRouter as Router, Switch, Route } from 'react-router-dom';
-import Compare from './Components/Compare'
+import Compare from './Components/Compare/index'
 import Ranking from './Components/Ranking'
 
 import { Main } from '@aragon/ui'

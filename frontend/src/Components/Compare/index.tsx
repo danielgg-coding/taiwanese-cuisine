@@ -6,18 +6,20 @@ import { getList, vote } from '../../api';
 import CroppedImg from '../common/CroppedImg';
 import CenterMessage from '../common/CenterMessage';
 
+import type { food } from '../../types'
+
 const MIN_PLAYED_RESULT = 8;
 
-function chooseFromList(targetList) {
+function chooseFromList(targetList: number[]): number {
   const random = targetList[Math.floor(Math.random() * targetList.length)];
   return random;
 }
 
-function removeFromList(list, item) {
+function removeFromList(list: number[], item:number): number[] {
   return list.filter((element) => element !== item);
 }
 
-function initialAB(indexs) {
+function initialAB(indexs: number[]): number[] {
   const shuffled = indexs.sort(() => 0.5 - Math.random());
   let selected = shuffled.slice(0, 2);
   return selected;
@@ -29,11 +31,11 @@ function Compare() {
   // Can go to result after 10 plays
   const [countPlayed, setCountPlayed] = useState(0);
 
-  const [done, setDone] = useState(false);
-  const [foodList, setFoodList] = useState([]);
-  const [indexList, updateIndexList] = useState([]);
-  const [optionAIdx, setOptionAIdx] = useState(0);
-  const [optionBIdx, setOptionBIdx] = useState(0);
+  const [done, setDone] = useState<boolean>(false);
+  const [foodList, setFoodList] = useState<food[]>([]);
+  const [indexList, updateIndexList] = useState<number[]>([]);
+  const [optionAIdx, setOptionAIdx] = useState<number>(0);
+  const [optionBIdx, setOptionBIdx] = useState<number>(0);
 
   useMemo(async () => {
     const _foodList = await getList();
@@ -73,8 +75,7 @@ function Compare() {
     setCountPlayed(countPlayed + 1);
   };
 
-  return (
-    <>
+  return <div>
       <div style={{ paddingTop: '6%', paddingBottom: '4%', textAlign: 'center', fontSize: 36 }}>
         哪個好吃
       </div>
@@ -141,8 +142,8 @@ function Compare() {
           )}
         </div>
       </div>
-    </>
-  );
+    </div>
+  ;
 }
 
 export default Compare;

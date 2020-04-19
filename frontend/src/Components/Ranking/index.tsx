@@ -3,10 +3,11 @@ import { DataView } from '@aragon/ui'
 import CroppedImg from '../common/CroppedImg'
 
 import { getList } from '../../api';
+import type { food } from '../../types'
 
 function Ranking() {
 
-  const [foodList, setList] = useState([])
+  const [foodList, setList] = useState<food[]>([])
 
   useMemo(async()=>{
     const _list = await getList()
@@ -22,7 +23,7 @@ function Ranking() {
       <DataView
         fields={[ '排名', '', '名稱' , '分數', '出賽']}
         entries={foodList.slice(0, 10)}
-        renderEntry={(item, index) => {
+        renderEntry={(item: food, index: number) => {
           return [
             index + 1,
             <CroppedImg url={item.image} width={200} height={120}/>,
