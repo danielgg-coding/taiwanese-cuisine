@@ -13,6 +13,8 @@ import CroppedImg from '../common/CroppedImg'
 import { getList } from '../../api';
 import type { food } from '../../types'
 
+const share_title = "台灣最強小吃爭霸戰：由你來決定！"
+
 function Ranking() {
 
   const [foodList, setList] = useState<food[]>([])
@@ -46,21 +48,21 @@ function Ranking() {
       />
       <div style={{ paddingTop: '6%', paddingBottom: '4%', textAlign: 'center', fontSize: 20 }}>
         <FacebookShareButton
-          url="https://github.com/nygardk/react-share/blob/master/demo/Demo.tsx"
-          quote="台灣小吃爭霸戰"
+          url="https://food.taiwantop10.today/"
+          quote={share_title}
         >
           <FacebookIcon size={50} round />
         </FacebookShareButton>
         <LineShareButton
-          url="https://github.com/nygardk/react-share/blob/master/demo/Demo.tsx"
-          title="萬人投票結果，台灣小吃滷肉飯只排第二名...?！"
+          url="https://food.taiwantop10.today/"
+          title={share_title}
         >
           <LineIcon size={50} round />
         </LineShareButton>
 
         <TwitterShareButton
-          url="https://github.com/nygardk/react-share/blob/master/demo/Demo.tsx"
-          title="萬人投票結果，台灣小吃滷肉飯只排第二名...?！"
+          url="https://food.taiwantop10.today/"
+          title={share_title}
         >
           <TwitterIcon size={50} round />
         </TwitterShareButton>
