@@ -11,11 +11,6 @@ import type { food } from '../../types'
 const MIN_PLAYED_RESULT = 5;
 const MAX_REPEAT = 5;
 
-function chooseFromList(targetList: number[]): number {
-  const random = targetList[Math.floor(Math.random() * targetList.length)];
-  return random;
-}
-
 function removeFromList(list: number[], items:number[]): number[] {
   return list.filter((element) => !items.includes(element));
 }
