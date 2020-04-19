@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ButtonBase } from '@aragon/ui';
 import { Card, CardHeader, CardBody, Button } from 'shards-react';
@@ -8,7 +8,7 @@ import CenterMessage from '../common/CenterMessage';
 
 import type { food } from '../../types'
 
-const MIN_PLAYED_RESULT = 8;
+const MIN_PLAYED_RESULT = 5;
 
 function chooseFromList(targetList: number[]): number {
   const random = targetList[Math.floor(Math.random() * targetList.length)];
@@ -30,10 +30,11 @@ function Compare() {
 
   // Can go to result after 10 plays
   const [countPlayed, setCountPlayed] = useState(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const [done, setDone] = useState<boolean>(false);
   const [foodList, setFoodList] = useState<food[]>([]);
-  const [indexList, updateIndexList] = useState<number[]>([]);
+  const [indexList, setIndexList] = useState<number[]>([]);
   const [optionAIdx, setOptionAIdx] = useState<number>(0);
   const [optionBIdx, setOptionBIdx] = useState<number>(0);
 
@@ -46,40 +47,39 @@ function Compare() {
     let _list = removeFromList(initIndexs, a);
     _list = removeFromList(_list, b);
     setFoodList(_foodList);
-    updateIndexList(_list);
+    setIndexList(_list);
+    setIsLoading(false)
   }, []);
 
-  const onClickOptionA = () => {
-    vote(foodList[optionAIdx].id, foodList[optionBIdx].id);
-    if (indexList.length === 0) {
+  useEffect(() => {
+    if (!isLoading && indexList.length === 0) {
       setDone(true);
       return;
     }
-    const newOptionB = chooseFromList(indexList);
-    const _list = removeFromList(indexList, newOptionB);
-    updateIndexList(_list);
-    setOptionBIdx(newOptionB);
+  }, [indexList, isLoading])
+
+  const onClickOptionA = () => {
     setCountPlayed(countPlayed + 1);
+    vote(foodList[optionAIdx].id, foodList[optionBIdx].id);
+    const newOptionB = chooseFromList(indexList);
+    setIndexList(removeFromList(indexList, newOptionB));
+    setOptionBIdx(newOptionB);
+    
   };
 
   const onClickOptionB = () => {
-    vote(foodList[optionBIdx].id, foodList[optionAIdx].id);
-    if (indexList.length === 0) {
-      setDone(true);
-      return;
-    }
-    const newOptionA = chooseFromList(indexList);
-    const _list = removeFromList(indexList, newOptionA);
-    updateIndexList(_list);
-    setOptionAIdx(newOptionA);
     setCountPlayed(countPlayed + 1);
+    vote(foodList[optionBIdx].id, foodList[optionAIdx].id);
+    const newOptionA = chooseFromList(indexList);
+    setIndexList(removeFromList(indexList, newOptionA));
+    setOptionAIdx(newOptionA);
   };
 
   return <div>
       <div style={{ paddingTop: '6%', paddingBottom: '4%', textAlign: 'center', fontSize: 36 }}>
         哪個好吃
       </div>
-      {foodList.length === 0 ? (
+      { isLoading ? (
         <CenterMessage text='載入中...' />
       ) : done ? (
         <CenterMessage text='沒東西啦！' />
@@ -88,7 +88,7 @@ function Compare() {
           <div style={{ padding: '3%', display: 'inline-block' }}>
             <Card style={{ maxWidth: '650' }}>
               <ButtonBase disabled={done} onClick={onClickOptionA}>
-                <CardHeader>選項A</CardHeader>
+                <CardHeader></CardHeader>
                 <CroppedImg
                   width={350}
                   height={300}
@@ -109,7 +109,7 @@ function Compare() {
           <div style={{ padding: '3%', display: 'inline-block' }}>
             <Card style={{ maxWidth: '500' }}>
               <ButtonBase disabled={done} onClick={onClickOptionB}>
-                <CardHeader>選項B</CardHeader>
+                <CardHeader></CardHeader>
                 <CroppedImg
                   width={350}
                   height={300}
@@ -132,7 +132,7 @@ function Compare() {
 
       <div style={{ textAlign: 'center' }}>
         <div style={{ padding: '3%', display: 'inline-block' }}>
-          {countPlayed > MIN_PLAYED_RESULT ? (
+          {countPlayed >= MIN_PLAYED_RESULT ? (
             <Button display='true' onClick={() => history.push('/ranking')}>
               {' '}
               看結果{' '}
