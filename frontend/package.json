@@ -12,6 +12,7 @@
     "react-dom": "^16.13.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
+    "react-share": "^4.1.0",
     "shards-react": "^1.0.3",
     "styled-components": "^5.0.1",
     "typescript": "^3.8.3"
