@@ -13,7 +13,7 @@ import CroppedImg from '../common/CroppedImg'
 import { getList } from '../../api';
 import type { food } from '../../types'
 
-const share_title = "台灣最強小吃爭霸戰：由你來決定！"
+const share_title = "一起來投票決定臺灣最強美食！"
 
 function Ranking() {
 
