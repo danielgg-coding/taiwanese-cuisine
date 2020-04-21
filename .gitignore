@@ -7,3 +7,6 @@ backend/serviceAccountKey.json
 !.elasticbeanstalk/*.global.yml
 !.elasticbeanstalk/config.yml
 **/node_modules
+
+**build
+backend/main
